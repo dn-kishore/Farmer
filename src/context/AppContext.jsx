@@ -16,18 +16,62 @@ export const AppProvider = ({ children }) => {
   const [fertilizerHelpMode, setFertilizerHelpMode] = useState('recommendation'); // 'recommendation' or 'quantity'
   const [cart, setCart] = useState([]);
   const [isDark, setIsDark] = useState(false);
-  const [weatherData, setWeatherData] = useState({
-    temp: null,
-    humidity: null,
-    windSpeed: null,
-    condition: null,
-    teluguCondition: null,
-    location: localStorage.getItem('weatherLocation') || null,
-    teluguLocation: localStorage.getItem('weatherLocation') || null,
-    icon: 'partly_cloudy_day',
-    loading: localStorage.getItem('weatherLocation') ? true : false,
-    error: null
-  });
+  const getCachedWeatherData = () => {
+    const defaultData = {
+      temp: null,
+      humidity: null,
+      windSpeed: null,
+      condition: null,
+      teluguCondition: null,
+      location: null,
+      teluguLocation: null,
+      icon: 'partly_cloudy_day',
+      loading: false,
+      error: null
+    };
+
+    try {
+      const cached = localStorage.getItem('weatherCache');
+      const savedLoc = localStorage.getItem('weatherLocation');
+      if (cached && savedLoc) {
+        const parsed = JSON.parse(cached);
+        // Cache weather data for 30 minutes (30 * 60 * 1000 ms)
+        const isFresh = Date.now() - parsed.timestamp < 30 * 60 * 1000;
+        if (isFresh && parsed.location === savedLoc) {
+          return {
+            ...parsed,
+            loading: false,
+            error: null
+          };
+        }
+      }
+      if (savedLoc) {
+        return {
+          ...defaultData,
+          location: savedLoc,
+          teluguLocation: savedLoc,
+          loading: true
+        };
+      }
+    } catch (e) {
+      console.warn('Failed to parse cached weather', e);
+    }
+    return defaultData;
+  };
+
+  const [weatherData, setWeatherData] = useState(getCachedWeatherData);
+
+  const saveWeatherToCache = (data) => {
+    try {
+      localStorage.setItem('weatherLocation', data.location);
+      localStorage.setItem('weatherCache', JSON.stringify({
+        ...data,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      console.warn('Failed to save weather cache', e);
+    }
+  };
 
   const fetchWeather = async (lat, lon) => {
     try {
@@ -58,7 +102,7 @@ export const AppProvider = ({ children }) => {
 
       const mappedCond = conditionMap[cond] || { en: cond, te: cond };
 
-      setWeatherData({
+      const newWeatherData = {
         temp: Math.round(data.main.temp),
         humidity: data.main.humidity,
         windSpeed: Math.round(data.wind.speed * 3.6),
@@ -69,8 +113,10 @@ export const AppProvider = ({ children }) => {
         icon: iconName,
         loading: false,
         error: null
-      });
-      localStorage.setItem('weatherLocation', data.name);
+      };
+
+      setWeatherData(newWeatherData);
+      saveWeatherToCache(newWeatherData);
     } catch (err) {
       console.error(err);
       setWeatherData(prev => ({ ...prev, loading: false }));
@@ -126,8 +172,25 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const fetchWeatherByCity = async (cityName) => {
+  const fetchWeatherByCity = async (cityName, bypassCache = false) => {
     try {
+      if (!bypassCache) {
+        const cached = localStorage.getItem('weatherCache');
+        const savedLoc = localStorage.getItem('weatherLocation');
+        if (cached && savedLoc && savedLoc.toLowerCase() === cityName.toLowerCase()) {
+          const parsed = JSON.parse(cached);
+          const isFresh = Date.now() - parsed.timestamp < 30 * 60 * 1000;
+          if (isFresh) {
+            setWeatherData({
+              ...parsed,
+              loading: false,
+              error: null
+            });
+            return true;
+          }
+        }
+      }
+
       setWeatherData(prev => ({ ...prev, loading: true, error: null }));
       let url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityName)}&appid=e7d96cb598ba84ac3c1fb223a233c543&units=metric`;
       const res = await fetch(url);
@@ -156,7 +219,7 @@ export const AppProvider = ({ children }) => {
 
       const mappedCond = conditionMap[cond] || { en: cond, te: cond };
 
-      setWeatherData({
+      const newWeatherData = {
         temp: Math.round(data.main.temp),
         humidity: data.main.humidity,
         windSpeed: Math.round(data.wind.speed * 3.6),
@@ -167,7 +230,10 @@ export const AppProvider = ({ children }) => {
         icon: iconName,
         loading: false,
         error: null
-      });
+      };
+
+      setWeatherData(newWeatherData);
+      saveWeatherToCache(newWeatherData);
       return true;
     } catch (err) {
       console.error(err);
@@ -178,6 +244,7 @@ export const AppProvider = ({ children }) => {
 
   const clearWeatherLocation = () => {
     localStorage.removeItem('weatherLocation');
+    localStorage.removeItem('weatherCache');
     setWeatherData({
       temp: null,
       humidity: null,
@@ -195,7 +262,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const saved = localStorage.getItem('weatherLocation');
     if (saved) {
-      fetchWeatherByCity(saved);
+      fetchWeatherByCity(saved, false);
     } else {
       setWeatherData((prev) => ({ ...prev, loading: false, location: null }));
     }
