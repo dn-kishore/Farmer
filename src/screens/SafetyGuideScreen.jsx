@@ -1,25 +1,47 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import ttsService from '../services/ttsService';
 
 const SafetyGuideScreen = () => {
   const { language, navigateTo } = useApp();
   const [playingId, setPlayingId] = useState(null);
+  const [loadingId, setLoadingId] = useState(null);
 
   const isTel = language === 'te';
 
-  const speakText = (text, id) => {
-    if ('speechSynthesis' in window) {
-      if (playingId === id) {
-        window.speechSynthesis.cancel();
-        setPlayingId(null);
-      } else {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = isTel ? 'te-IN' : 'en-US';
-        utterance.onend = () => setPlayingId(null);
+  const speakText = async (text, id) => {
+    if (playingId === id) {
+      ttsService.cancel();
+      setPlayingId(null);
+      return;
+    }
+
+    setLoadingId(id);
+    const lang = isTel ? 'te' : 'en';
+    
+    try {
+      await ttsService.speak(
+        text,
+        lang,
+        id,
+        () => setPlayingId(null),
+        (error) => {
+          console.error("TTS error:", error);
+          setPlayingId(null);
+          setLoadingId(null);
+        }
+      );
+      
+      setLoadingId(null);
+      if (ttsService.getCurrentId() === id) {
         setPlayingId(id);
-        window.speechSynthesis.speak(utterance);
+      } else {
+        setPlayingId(null);
       }
+    } catch (error) {
+      console.error("Failed to speak text:", error);
+      setPlayingId(null);
+      setLoadingId(null);
     }
   };
 
@@ -100,9 +122,16 @@ const SafetyGuideScreen = () => {
                   playingId === g.id ? 'bg-primary/20 text-primary' : 'text-on-surface-variant hover:text-primary'
                 }`}
               >
-                <span className="material-symbols-outlined text-[20px]">
-                  {playingId === g.id ? 'volume_mute' : 'volume_up'}
-                </span>
+                {loadingId === g.id ? (
+                  <svg className="animate-spin h-4 w-4 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  <span className="material-symbols-outlined text-[20px]">
+                    {playingId === g.id ? 'volume_mute' : 'volume_up'}
+                  </span>
+                )}
               </button>
             </div>
             <div>
@@ -126,9 +155,16 @@ const SafetyGuideScreen = () => {
             playingId === 99 ? 'bg-primary/20 text-primary' : 'bg-surface-container-high text-on-surface-variant'
           }`}
         >
-          <span className="material-symbols-outlined text-[16px]">
-            {playingId === 99 ? 'volume_mute' : 'volume_up'}
-          </span>
+          {loadingId === 99 ? (
+            <svg className="animate-spin h-4 w-4 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          ) : (
+            <span className="material-symbols-outlined text-[16px]">
+              {playingId === 99 ? 'volume_mute' : 'volume_up'}
+            </span>
+          )}
         </button>
       </div>
 

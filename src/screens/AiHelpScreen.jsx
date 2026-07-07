@@ -1,13 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import ttsService from '../services/ttsService';
 
 const AiHelpScreen = () => {
   const { language, navigateTo, chatMessages, setChatMessages, t, setFertilizerHelpMode } = useApp();
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' or 'tools'
   const [inputText, setInputText] = useState('');
   const [playingId, setPlayingId] = useState(null);
+  const [loadingId, setLoadingId] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const messagesEndRef = useRef(null);
+
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
 
   const isTel = language === 'te';
 
@@ -18,57 +23,238 @@ const AiHelpScreen = () => {
     }
   }, [chatMessages, activeTab]);
 
-  const speakText = (text, id) => {
-    if ('speechSynthesis' in window) {
-      if (playingId === id) {
-        window.speechSynthesis.cancel();
-        setPlayingId(null);
-      } else {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = isTel ? 'te-IN' : 'en-US';
-        utterance.onend = () => setPlayingId(null);
+  const speakText = async (text, id) => {
+    if (playingId === id) {
+      ttsService.cancel();
+      setPlayingId(null);
+      return;
+    }
+
+    setLoadingId(id);
+    const lang = isTel ? 'te' : 'en';
+    try {
+      await ttsService.speak(
+        text,
+        lang,
+        id,
+        () => setPlayingId(null),
+        (error) => {
+          console.error("TTS error:", error);
+          setPlayingId(null);
+          setLoadingId(null);
+        }
+      );
+
+      setLoadingId(null);
+      if (ttsService.getCurrentId() === id) {
         setPlayingId(id);
-        window.speechSynthesis.speak(utterance);
+      } else {
+        setPlayingId(null);
       }
+    } catch (error) {
+      console.error("Failed to speak text:", error);
+      setPlayingId(null);
+      setLoadingId(null);
     }
   };
 
-  const handleSend = (textToSend) => {
+  const handleSend = async (textToSend, isVoiceInput = false) => {
     if (!textToSend.trim()) return;
 
-    const userMsg = { id: chatMessages.length + 1, sender: 'user', text: textToSend, teluguText: textToSend };
+    const userMsg = { 
+      id: Date.now(), 
+      sender: 'user', 
+      text: textToSend, 
+      teluguText: textToSend 
+    };
     setChatMessages((prev) => [...prev, userMsg]);
     setInputText('');
 
-    // AI thinking delay
-    setTimeout(() => {
-      let responseText = "I've logged that. You should apply Urea N46% based on soil test indicators.";
-      let responseTe = "నేను దానిని సేవ్ చేసాను. మట్టి పరీక్ష సూచికల ఆధారంగా మీరు యూరియా N46% వేయాలి.";
-      
-      const query = textToSend.toLowerCase();
-      if (query.includes('rice') || query.includes('paddy') || query.includes('వరి') || query.includes('dose') || query.includes('మోతాదు')) {
-        responseText = "For Guntur paddy fields at vegetative stage, we recommend 45 kg of Nitrogen (Urea) and 20 kg of DAP per acre.";
-        responseTe = "గుంటూరు వరి పొలాలకు మొలక దశలో, ఎకరాకు 45 కిలోల నత్రజని (యూరియా) మరియు 20 కిలోల DAP సిఫార్సు చేస్తున్నాము.";
-      } else if (query.includes('weather') || query.includes('rain') || query.includes('వర్షం') || query.includes('వాతావరణం')) {
-        responseText = "Pesticide application warning: Light rainfall is expected in Guntur in 2 hours. Do not spray now.";
-        responseTe = "కీటకనాశిని పిచికారీ హెచ్చరిక: గుంటూరులో 2 గంటల్లో తేలికపాటి వర్షం కురిసే అవకాశం ఉంది. ఇప్పుడు స్ప్రే చేయవద్దు.";
-      } else if (query.includes('disease') || query.includes('blast') || query.includes('తెగులు') || query.includes('చెక్')) {
-        responseText = "Tomato Early Blight detected recently. Recommend copper-based spray. Check Crop Diagnosis page.";
-        responseTe = "టమోటా ఆకు అగ్గి తెగులు కనుగొనబడింది. రాగి ఆధారిత పిచికారీ సిఫార్సు చేయబడింది. పంట తెగులు పరీక్ష పేజీ చూడండి.";
+    // AI thinking delay placeholder
+    const thinkingId = Date.now() + 1;
+    const thinkingMsg = {
+      id: thinkingId,
+      sender: 'ai',
+      text: isTel ? 'ఆలోచిస్తున్నాను...' : 'Thinking...',
+      teluguText: isTel ? 'ఆలోచిస్తున్నాను...' : 'Thinking...',
+      isThinking: true
+    };
+    setChatMessages((prev) => [...prev, thinkingMsg]);
+
+    try {
+      const activeModel = isVoiceInput ? 'openrouter/free' : 'cohere/north-mini-code:free';
+      console.log('Sending chat request to OpenRouter using model:', activeModel);
+
+      // Extract context of the conversation
+      const history = chatMessages
+        .filter(m => !m.isThinking)
+        .map(m => ({
+          role: m.sender === 'user' ? 'user' : 'assistant',
+          content: isTel ? m.teluguText : m.text
+        }));
+
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY || ''}`,
+          'HTTP-Referer': 'https://agriassist.app',
+          'X-Title': 'AgriAssist AI'
+        },
+        body: JSON.stringify({
+          model: activeModel,
+          messages: [
+            {
+              role: 'system',
+              content: `You are AgriAssist, an AI voice farming partner. Help the farmer with weather, mandi prices, crop diseases, or fertilizer ratios. Keep your responses short, concise, and easy to understand (maximum 3 sentences). Respond in ${isTel ? 'Telugu (using Telugu script)' : 'English'} only.`
+            },
+            ...history,
+            { role: 'user', content: textToSend }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const aiMsg = {
-        id: chatMessages.length + 2,
-        sender: 'ai',
-        text: responseText,
-        teluguText: responseTe
-      };
-      setChatMessages((prev) => [...prev, aiMsg]);
-    }, 1000);
+      const data = await response.json();
+      const aiResponse = data.choices[0].message.content.trim();
+
+      setChatMessages((prev) => 
+        prev.map(m => m.id === thinkingId ? {
+          id: thinkingId,
+          sender: 'ai',
+          text: aiResponse,
+          teluguText: aiResponse
+        } : m)
+      );
+
+      // If user queried using voice, automatically read out the answer
+      if (isVoiceInput) {
+        speakText(aiResponse, thinkingId);
+      }
+
+    } catch (error) {
+      console.error('Error contacting OpenRouter API:', error);
+      setChatMessages((prev) => 
+        prev.map(m => m.id === thinkingId ? {
+          id: thinkingId,
+          sender: 'ai',
+          text: isTel ? 'క్షమించండి, సర్వర్ కనెక్ట్ కాలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.' : 'Sorry, failed to connect to AI server. Please try again.',
+          teluguText: isTel ? 'క్షమించండి, సర్వర్ కనెక్ట్ కాలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి.' : 'Sorry, failed to connect to AI server. Please try again.'
+        } : m)
+      );
+    }
   };
 
-  const startVoiceRecording = () => {
+  const startVoiceRecording = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.warn('getUserMedia not supported. Using simulation fallback.');
+      runVoiceSimulation();
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        stream.getTracks().forEach(track => track.stop());
+        await transcribeAudio(audioBlob);
+      };
+
+      setIsRecording(true);
+      mediaRecorder.start();
+
+      // Auto-stop after 4 seconds to prevent runaway recording
+      setTimeout(() => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+          mediaRecorderRef.current.stop();
+          setIsRecording(false);
+        }
+      }, 4000);
+
+    } catch (err) {
+      console.error('Error starting media recorder:', err);
+      runVoiceSimulation();
+    }
+  };
+
+  const stopVoiceRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
+  };
+
+  const transcribeAudio = async (audioBlob) => {
+    const thinkingId = Date.now();
+    const transcribingMsg = {
+      id: thinkingId,
+      sender: 'ai',
+      text: isTel ? 'మీ మాటలను వింటున్నాను...' : 'Transcribing voice...',
+      teluguText: isTel ? 'మీ మాటలను వింటున్నాను...' : 'Transcribing voice...',
+      isThinking: true
+    };
+    setChatMessages((prev) => [...prev, transcribingMsg]);
+
+    try {
+      console.log('Sending audio blob to Sarvam AI STT API...');
+      const formData = new FormData();
+      formData.append('file', audioBlob, 'query.wav');
+      formData.append('model', 'saaras:v3');
+      formData.append('mode', 'transcribe');
+      formData.append('language_code', isTel ? 'te-IN' : 'en-IN');
+
+      const response = await fetch('https://api.sarvam.ai/speech-to-text', {
+        method: 'POST',
+        headers: {
+          'api-subscription-key': import.meta.env.VITE_SARVAM_API_KEY || ''
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`Sarvam STT failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      const transcription = data.transcript;
+
+      // Remove transcribing indicator
+      setChatMessages((prev) => prev.filter(m => m.id !== thinkingId));
+
+      if (transcription && transcription.trim()) {
+        console.log('Transcription result:', transcription);
+        handleSend(transcription, true);
+      } else {
+        throw new Error('Empty transcript returned');
+      }
+
+    } catch (err) {
+      console.error('Sarvam transcription failed:', err);
+      setChatMessages((prev) => 
+        prev.map(m => m.id === thinkingId ? {
+          id: thinkingId,
+          sender: 'ai',
+          text: isTel ? 'క్షమించండి, మీ వాయిస్ గుర్తించలేకపోయాము. మళ్ళీ ప్రయత్నించండి.' : 'Sorry, we could not recognize your voice. Please try again.',
+          teluguText: isTel ? 'క్షమించండి, మీ వాయిస్ గుర్తించలేకపోయాము. మళ్ళీ ప్రయత్నించండి.' : 'Sorry, we could not recognize your voice. Please try again.'
+        } : m)
+      );
+    }
+  };
+
+  const runVoiceSimulation = () => {
     setIsRecording(true);
     setTimeout(() => {
       setIsRecording(false);
@@ -83,7 +269,7 @@ const AiHelpScreen = () => {
         "రసాయన ఎరువులు సురక్షితంగా ఎలా చల్లాలి?"
       ];
       const randomIdx = Math.floor(Math.random() * voiceQueriesEn.length);
-      handleSend(isTel ? voiceQueriesTe[randomIdx] : voiceQueriesEn[randomIdx]);
+      handleSend(isTel ? voiceQueriesTe[randomIdx] : voiceQueriesEn[randomIdx], true);
     }, 2000);
   };
 
@@ -168,9 +354,16 @@ const AiHelpScreen = () => {
                             }`}
                             aria-label="Play spoken text"
                           >
-                            <span className="material-symbols-outlined text-lg">
-                              {playingId === msg.id ? 'volume_mute' : 'volume_up'}
-                            </span>
+                            {loadingId === msg.id ? (
+                              <svg className={`animate-spin h-5 w-5 ${playingId === msg.id ? 'text-white' : 'text-primary'}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                            ) : (
+                              <span className="material-symbols-outlined text-lg">
+                                {playingId === msg.id ? 'volume_mute' : 'volume_up'}
+                              </span>
+                            )}
                           </button>
                         )}
                       </div>
@@ -207,7 +400,7 @@ const AiHelpScreen = () => {
             <div className="absolute bottom-0 left-0 w-full bg-white border-t border-outline-variant/20 p-2.5 flex items-center gap-2 z-20 shrink-0">
               {/* Voice Button */}
               <button 
-                onClick={startVoiceRecording}
+                onClick={isRecording ? stopVoiceRecording : startVoiceRecording}
                 className="w-11 h-11 bg-primary-container/20 text-primary border border-primary-container/30 rounded-xl flex items-center justify-center active:scale-90 transition-transform shadow-sm"
                 title="Speak question"
               >
@@ -334,7 +527,10 @@ const AiHelpScreen = () => {
               {isTel ? 'నేను వింటున్నాను...' : 'Listening...'}
             </h3>
             
-            <div className="relative w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/40 animate-pulse">
+            <div 
+              onClick={stopVoiceRecording}
+              className="relative w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/40 animate-pulse cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+            >
               <span className="material-symbols-outlined text-[36px] text-white">mic</span>
             </div>
             

@@ -97,10 +97,36 @@ const WeatherScreen = () => {
     }
   };
 
+  const rainChance = weatherData.loading || !weatherData.location ? 0 : (
+    weatherData.icon === 'rainy' || weatherData.icon === 'thunderstorm'
+      ? 92
+      : weatherData.humidity > 80
+        ? 75
+        : weatherData.humidity > 70
+          ? 40
+          : weatherData.humidity > 60
+            ? 15
+            : 5
+  );
+
   const metrics = weatherData.loading || !weatherData.location ? [] : [
     { label: isTel ? 'తేమ' : 'Humidity', val: `${weatherData.humidity}%`, icon: 'humidity_percentage', color: 'text-secondary bg-secondary-container/20' },
     { label: isTel ? 'గాలి వేగం' : 'Wind Speed', val: `${weatherData.windSpeed} km/h`, icon: 'air', color: 'text-primary bg-primary-container/20' },
-    { label: isTel ? 'యూవీ ఇండెక్స్' : 'UV Index', val: isTel ? 'మధ్యస్థం' : 'Moderate', icon: 'light_mode', color: 'text-tertiary bg-tertiary-container/20' },
+    { 
+      label: isTel ? 'వర్షం పడే అవకాశం' : 'Rain Chance', 
+      val: `${rainChance}%`, 
+      icon: (
+        <svg className="w-5 h-5 text-tertiary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {/* Slanted rain drops */}
+          <path d="M10 2L9 4M14 1.5L13 3.5M18 2L17 4" />
+          {/* Open umbrella canopy */}
+          <path d="M3 13c0-4.97 4.03-9 9-9s9 4.03 9 9H3z" fill="currentColor" fillOpacity="0.2" />
+          {/* Handle */}
+          <path d="M12 13v6a2 2 0 0 0 4 0" />
+        </svg>
+      ), 
+      color: 'text-tertiary bg-tertiary-container/20' 
+    },
     { label: isTel ? 'నేల ఉష్ణోగ్రత' : 'Soil Temp', val: '18°C', icon: 'thermostat', color: 'text-secondary bg-secondary-fixed-dim/20' }
   ];
 
@@ -245,42 +271,18 @@ const WeatherScreen = () => {
         ) : (
           /* Live Weather Details view WITHOUT search option */
           <>
-            {/* AI Insight Card */}
-            <section className="bg-white/70 backdrop-blur-md border border-white/40 rounded-2xl p-lg shadow-sm relative overflow-hidden">
-              <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
-              <div className="flex items-start justify-between relative z-10 mb-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="material-symbols-outlined text-primary text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>smart_toy</span>
-                    <span className="font-label-md text-label-md text-primary tracking-wide uppercase font-bold">
-                      {isTel ? 'AI పంట సమాచారం' : 'AI Field Insight'}
-                    </span>
-                  </div>
-                  <h2 className="text-xs font-bold text-on-surface mb-2 leading-tight">
-                    {aiInsightTitle}
-                  </h2>
-                  <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                    {aiInsightDesc}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button className="bg-gradient-to-b from-primary to-[#157a24] text-white font-semibold text-[10px] px-4 py-2.5 rounded-lg active:scale-95 transition-transform flex items-center gap-1.5 shadow-sm">
-                  <span className="material-symbols-outlined text-xs">schedule</span>
-                  {isTel ? 'షెడ్యూల్ చేయండి' : 'Schedule'}
-                </button>
-                <button className="bg-surface-container font-semibold text-[10px] px-4 py-2.5 rounded-lg text-on-surface hover:bg-surface-container-high transition-colors">
-                  {isTel ? 'నేల తేమ డేటా' : 'Soil Data'}
-                </button>
-              </div>
-            </section>
+
 
             {/* Bento Grid */}
             <section className="grid grid-cols-2 gap-3">
               {metrics.map((m, idx) => (
                 <div key={idx} className="bg-white rounded-xl p-4 shadow-sm border border-outline-variant/25 flex flex-col items-start">
                   <div className={`w-10 h-10 rounded-full ${m.color} flex items-center justify-center mb-2`}>
-                    <span className="material-symbols-outlined text-xl">{m.icon}</span>
+                    {typeof m.icon === 'string' ? (
+                      <span className="material-symbols-outlined text-xl">{m.icon}</span>
+                    ) : (
+                      m.icon
+                    )}
                   </div>
                   <span className="text-[10px] text-on-surface-variant mb-1 font-medium">{m.label}</span>
                   <span className="text-sm text-on-surface font-bold">{m.val}</span>

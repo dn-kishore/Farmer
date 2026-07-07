@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import ttsService from '../services/ttsService';
 
 const PriceHistoryScreen = () => {
   const { language } = useApp();
@@ -8,19 +9,29 @@ const PriceHistoryScreen = () => {
 
   const isTel = language === 'te';
 
-  const speakText = (text, id) => {
-    if ('speechSynthesis' in window) {
-      if (playingId === id) {
-        window.speechSynthesis.cancel();
+  const speakText = async (text, id) => {
+    const lang = isTel ? 'te' : 'en';
+    
+    try {
+      await ttsService.speak(
+        text,
+        lang,
+        id,
+        () => setPlayingId(null),
+        (error) => {
+          console.error("TTS error:", error);
+          setPlayingId(null);
+        }
+      );
+      
+      if (ttsService.getCurrentId() === id) {
         setPlayingId(null);
       } else {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = isTel ? 'te-IN' : 'en-US';
-        utterance.onend = () => setPlayingId(null);
         setPlayingId(id);
-        window.speechSynthesis.speak(utterance);
       }
+    } catch (error) {
+      console.error("Failed to speak text:", error);
+      setPlayingId(null);
     }
   };
 

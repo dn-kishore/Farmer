@@ -273,12 +273,18 @@ export const AppProvider = ({ children }) => {
     if (Capacitor.isNativePlatform()) {
       const checkForUpdates = async () => {
         try {
+          // Notify app is ready to prevent rolling back to previous version
+          await CapacitorUpdater.notifyAppReady();
+
+          // Get current version dynamically
+          const currentBundle = await CapacitorUpdater.current();
+          const currentWebVersion = currentBundle.version || '1.0.0';
+          console.log('Current active bundle version:', currentWebVersion);
+
           // Check update version descriptor from your server
           const response = await fetch('https://raw.githubusercontent.com/dn-kishore/agriassist-ota/main/version.json');
           if (!response.ok) return;
           const manifest = await response.json();
-          
-          const currentWebVersion = '1.0.0'; // Hardcoded current build code
           
           if (manifest.version !== currentWebVersion && manifest.url) {
             console.log('Downloading OTA update version:', manifest.version);
