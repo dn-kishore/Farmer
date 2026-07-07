@@ -1,4 +1,7 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import { Geolocation } from '@capacitor/geolocation';
+import { CapacitorUpdater } from '@capgo/capacitor-updater';
+import { Capacitor } from '@capacitor/core';
 
 const AppContext = createContext();
 
@@ -13,6 +16,219 @@ export const AppProvider = ({ children }) => {
   const [fertilizerHelpMode, setFertilizerHelpMode] = useState('recommendation'); // 'recommendation' or 'quantity'
   const [cart, setCart] = useState([]);
   const [isDark, setIsDark] = useState(false);
+  const [weatherData, setWeatherData] = useState({
+    temp: null,
+    humidity: null,
+    windSpeed: null,
+    condition: null,
+    teluguCondition: null,
+    location: localStorage.getItem('weatherLocation') || null,
+    teluguLocation: localStorage.getItem('weatherLocation') || null,
+    icon: 'partly_cloudy_day',
+    loading: localStorage.getItem('weatherLocation') ? true : false,
+    error: null
+  });
+
+  const fetchWeather = async (lat, lon) => {
+    try {
+      let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=e7d96cb598ba84ac3c1fb223a233c543&units=metric`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Failed to fetch weather');
+      const data = await res.json();
+      
+      let iconName = 'partly_cloudy_day';
+      const cond = data.weather[0].main;
+      if (cond === 'Clear') iconName = 'clear_day';
+      else if (cond === 'Rain' || cond === 'Drizzle') iconName = 'rainy';
+      else if (cond === 'Thunderstorm') iconName = 'thunderstorm';
+      else if (cond === 'Snow') iconName = 'weather_snowy';
+      else if (cond === 'Clouds') iconName = 'cloudy';
+
+      const conditionMap = {
+        'Clear': { en: 'Sunny', te: 'ఎండగా ఉంటుంది' },
+        'Rain': { en: 'Rainy', te: 'వర్షం పడుతుంది' },
+        'Drizzle': { en: 'Drizzle', te: 'చినుకులు' },
+        'Thunderstorm': { en: 'Thunderstorm', te: 'ఉరుములతో కూడిన వర్షం' },
+        'Clouds': { en: 'Cloudy', te: 'మేఘావృతం' },
+        'Atmosphere': { en: 'Hazy', te: 'పొగమంచు' },
+        'Mist': { en: 'Mist', te: 'పొగమంచు' },
+        'Haze': { en: 'Hazy', te: 'పొగమంచు' },
+        'Fog': { en: 'Foggy', te: 'పొగమంచు' }
+      };
+
+      const mappedCond = conditionMap[cond] || { en: cond, te: cond };
+
+      setWeatherData({
+        temp: Math.round(data.main.temp),
+        humidity: data.main.humidity,
+        windSpeed: Math.round(data.wind.speed * 3.6),
+        condition: mappedCond.en,
+        teluguCondition: mappedCond.te,
+        location: data.name,
+        teluguLocation: data.name,
+        icon: iconName,
+        loading: false,
+        error: null
+      });
+      localStorage.setItem('weatherLocation', data.name);
+    } catch (err) {
+      console.error(err);
+      setWeatherData(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const refreshWeatherWithGps = async () => {
+    setWeatherData(prev => ({ ...prev, loading: true, error: null }));
+    
+    const tryWebGeolocation = () => {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error('Browser does not support geolocation'));
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve(pos),
+          (err) => reject(err),
+          { enableHighAccuracy: false, timeout: 8000 }
+        );
+      });
+    };
+
+    try {
+      let position;
+      try {
+        const perm = await Geolocation.checkPermissions();
+        if (perm.location !== 'granted') {
+          const req = await Geolocation.requestPermissions();
+          if (req.location !== 'granted') {
+            throw new Error('Location permission not granted');
+          }
+        }
+        position = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: false,
+          timeout: 8000
+        });
+      } catch (capErr) {
+        console.warn('Capacitor Geolocation failed, trying web browser fallback...', capErr);
+        position = await tryWebGeolocation();
+      }
+
+      await fetchWeather(position.coords.latitude, position.coords.longitude);
+    } catch (error) {
+      console.error('All geolocation attempts failed:', error);
+      setWeatherData(prev => ({ 
+        ...prev, 
+        loading: false, 
+        error: language === 'te' 
+          ? 'GPS పని చేయడం లేదు. దయచేసి మీ ప్రాంతాన్ని వెతకండి.' 
+          : 'GPS location detection failed. Please search for your town manually.' 
+      }));
+    }
+  };
+
+  const fetchWeatherByCity = async (cityName) => {
+    try {
+      setWeatherData(prev => ({ ...prev, loading: true, error: null }));
+      let url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityName)}&appid=e7d96cb598ba84ac3c1fb223a233c543&units=metric`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('City not found');
+      const data = await res.json();
+      
+      let iconName = 'partly_cloudy_day';
+      const cond = data.weather[0].main;
+      if (cond === 'Clear') iconName = 'clear_day';
+      else if (cond === 'Rain' || cond === 'Drizzle') iconName = 'rainy';
+      else if (cond === 'Thunderstorm') iconName = 'thunderstorm';
+      else if (cond === 'Snow') iconName = 'weather_snowy';
+      else if (cond === 'Clouds') iconName = 'cloudy';
+
+      const conditionMap = {
+        'Clear': { en: 'Sunny', te: 'ఎండగా ఉంటుంది' },
+        'Rain': { en: 'Rainy', te: 'వర్షం పడుతుంది' },
+        'Drizzle': { en: 'Drizzle', te: 'చినుకులు' },
+        'Thunderstorm': { en: 'Thunderstorm', te: 'ఉరుములతో కూడిన వర్షం' },
+        'Clouds': { en: 'Cloudy', te: 'మేఘావృతం' },
+        'Atmosphere': { en: 'Hazy', te: 'పొగమంచు' },
+        'Mist': { en: 'Mist', te: 'పొగమంచు' },
+        'Haze': { en: 'Hazy', te: 'పొగమంచు' },
+        'Fog': { en: 'Foggy', te: 'పొగమంచు' }
+      };
+
+      const mappedCond = conditionMap[cond] || { en: cond, te: cond };
+
+      setWeatherData({
+        temp: Math.round(data.main.temp),
+        humidity: data.main.humidity,
+        windSpeed: Math.round(data.wind.speed * 3.6),
+        condition: mappedCond.en,
+        teluguCondition: mappedCond.te,
+        location: data.name,
+        teluguLocation: data.name,
+        icon: iconName,
+        loading: false,
+        error: null
+      });
+      return true;
+    } catch (err) {
+      console.error(err);
+      setWeatherData(prev => ({ ...prev, loading: false, error: 'Location not found' }));
+      return false;
+    }
+  };
+
+  const clearWeatherLocation = () => {
+    localStorage.removeItem('weatherLocation');
+    setWeatherData({
+      temp: null,
+      humidity: null,
+      windSpeed: null,
+      condition: null,
+      teluguCondition: null,
+      location: null,
+      teluguLocation: null,
+      icon: 'partly_cloudy_day',
+      loading: false,
+      error: null
+    });
+  };
+
+  useEffect(() => {
+    const saved = localStorage.getItem('weatherLocation');
+    if (saved) {
+      fetchWeatherByCity(saved);
+    } else {
+      setWeatherData((prev) => ({ ...prev, loading: false, location: null }));
+    }
+  }, []);
+
+  // Live OTA Web Updates
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      const checkForUpdates = async () => {
+        try {
+          // Check update version descriptor from your server
+          const response = await fetch('https://raw.githubusercontent.com/dn-kishore/agriassist-ota/main/version.json');
+          if (!response.ok) return;
+          const manifest = await response.json();
+          
+          const currentWebVersion = '1.0.0'; // Hardcoded current build code
+          
+          if (manifest.version !== currentWebVersion && manifest.url) {
+            console.log('Downloading OTA update version:', manifest.version);
+            const version = await CapacitorUpdater.download({
+              url: manifest.url,
+              version: manifest.version,
+            });
+            console.log('OTA update downloaded. Swapping build...');
+            await CapacitorUpdater.set(version);
+          }
+        } catch (err) {
+          console.warn('OTA update check failed:', err);
+        }
+      };
+      checkForUpdates();
+    }
+  }, []);
 
   const toggleDarkMode = () => {
     setIsDark((prev) => {
@@ -271,7 +487,12 @@ export const AppProvider = ({ children }) => {
       t,
       logout,
       fertilizerHelpMode,
-      setFertilizerHelpMode
+      setFertilizerHelpMode,
+      weatherData,
+      setWeatherData,
+      refreshWeatherWithGps,
+      fetchWeatherByCity,
+      clearWeatherLocation
     }}>
       {children}
     </AppContext.Provider>

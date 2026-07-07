@@ -94,10 +94,10 @@ const FertilizerHelpScreen = () => {
   return (
     <div className="flex-grow flex flex-col pb-24 p-md">
       <div className="mb-4">
-        <h2 className="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">
+        <h2 className="text-base font-bold text-on-surface">
           {mode === 'recommendation' ? t('fertilizerRecommendation') : t('quantityCalculator')}
         </h2>
-        <p className="font-body-md text-body-md text-on-surface-variant mt-1">
+        <p className="text-xs text-on-surface-variant mt-1">
           {mode === 'recommendation' 
             ? (isTel ? 'పంట దశను బట్టి ఎరువుల మోతాదు సిఫార్సులు.' : 'Get optimal fertilizer recipes for your crop stage.')
             : (isTel ? 'మీ పొలం సైజును బట్టి ఎరువుల బస్తాల సంఖ్యను లెక్కించండి.' : 'Calculate exact fertilizer bag quantities for your field area.')}
@@ -111,7 +111,7 @@ const FertilizerHelpScreen = () => {
             setMode('recommendation');
             setResult(null);
           }}
-          className={`flex-1 py-2 font-title-md text-title-md font-bold rounded-lg transition-all ${
+          className={`flex-1 py-2 text-[11px] font-bold rounded-lg transition-all ${
             mode === 'recommendation' 
               ? 'bg-primary text-white shadow-sm' 
               : 'text-on-surface-variant hover:text-primary'
@@ -124,7 +124,7 @@ const FertilizerHelpScreen = () => {
             setMode('quantity');
             setResult(null);
           }}
-          className={`flex-1 py-2 font-title-md text-title-md font-bold rounded-lg transition-all ${
+          className={`flex-1 py-2 text-[11px] font-bold rounded-lg transition-all ${
             mode === 'quantity' 
               ? 'bg-primary text-white shadow-sm' 
               : 'text-on-surface-variant hover:text-primary'
@@ -137,11 +137,11 @@ const FertilizerHelpScreen = () => {
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-outline-variant/20 space-y-4">
         <form onSubmit={handleCalculate} className="space-y-4">
           <div className="flex flex-col gap-1">
-            <label className="font-label-md text-label-md font-semibold text-on-surface-variant">
+            <label className="text-[11px] font-bold text-on-surface-variant">
               {isTel ? 'పంట రకం' : 'Crop Type'}
             </label>
             <select
-              className="w-full h-11 px-3 rounded-xl bg-surface-container border border-outline-variant/30 font-body-md text-body-md font-semibold focus:bg-white outline-none"
+              className="w-full h-11 px-3 rounded-xl bg-surface-container border border-outline-variant/30 text-xs font-semibold focus:bg-white outline-none"
               value={crop}
               onChange={(e) => setCrop(e.target.value)}
             >
@@ -153,11 +153,11 @@ const FertilizerHelpScreen = () => {
 
           {mode === 'quantity' ? (
             <div className="flex flex-col gap-1">
-              <label className="font-label-md text-label-md font-semibold text-on-surface-variant">
+              <label className="text-[11px] font-bold text-on-surface-variant">
                 {isTel ? 'పొలం వైశాల్యం (ఎకరాలలో)' : 'Field Area (in Acres)'}
               </label>
               <input
-                className="w-full h-11 px-3 rounded-xl bg-surface-container border border-outline-variant/30 font-body-md text-body-md font-semibold focus:bg-white outline-none"
+                className="w-full h-11 px-3 rounded-xl bg-surface-container border border-outline-variant/30 text-xs font-semibold focus:bg-white outline-none"
                 type="number"
                 step="0.1"
                 placeholder="e.g. 2.5"
@@ -168,11 +168,11 @@ const FertilizerHelpScreen = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-1">
-              <label className="font-label-md text-label-md font-semibold text-on-surface-variant">
+              <label className="text-[11px] font-bold text-on-surface-variant">
                 {isTel ? 'పంట దశ' : 'Growth Stage'}
               </label>
               <select
-                className="w-full h-11 px-3 rounded-xl bg-surface-container border border-outline-variant/30 font-body-md text-body-md font-semibold focus:bg-white outline-none"
+                className="w-full h-11 px-3 rounded-xl bg-surface-container border border-outline-variant/30 text-xs font-semibold focus:bg-white outline-none"
                 value={stage}
                 onChange={(e) => setStage(e.target.value)}
               >
@@ -185,7 +185,7 @@ const FertilizerHelpScreen = () => {
 
           <button
             type="submit"
-            className="w-full h-11 bg-primary text-white font-title-md text-title-md font-bold rounded-xl shadow-md active:scale-95 transition-all flex items-center justify-center gap-1"
+            className="w-full h-11 bg-primary text-white text-xs font-bold rounded-xl shadow-md active:scale-95 transition-all flex items-center justify-center gap-1"
           >
             <span className="material-symbols-outlined text-sm">calculate</span>
             {mode === 'recommendation' 
@@ -197,7 +197,7 @@ const FertilizerHelpScreen = () => {
 
       {result && (
         <section className="mt-4 space-y-3 animate-in fade-in duration-300">
-          <h3 className="font-bold font-title-md text-title-md text-on-surface uppercase tracking-wider">
+          <h3 className="font-bold text-xs text-on-surface uppercase tracking-wider">
             {mode === 'recommendation' 
               ? (isTel ? 'సిఫార్సు చేసిన మోతాదు' : 'Recommended Dosage')
               : (isTel ? 'కావలసిన మొత్తం ఎరువులు' : 'Required Quantities')}
@@ -205,16 +205,16 @@ const FertilizerHelpScreen = () => {
 
           <div className="grid grid-cols-3 gap-2">
             <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-center">
-              <span className="block font-label-sm text-label-sm text-on-surface-variant font-bold">Urea (N)</span>
-              <span className="block font-title-md text-title-md font-bold text-primary mt-1">{result.n} {result.unitText}</span>
+              <span className="block text-[10px] text-on-surface-variant font-bold">Urea (N)</span>
+              <span className="block text-xs font-bold text-primary mt-1">{result.n} {result.unitText}</span>
             </div>
             <div className="bg-secondary-container/10 border border-secondary-container/20 rounded-xl p-3 text-center">
-              <span className="block font-label-sm text-label-sm text-on-surface-variant font-bold">DAP (P)</span>
-              <span className="block font-title-md text-title-md font-bold text-secondary mt-1">{result.p} {result.unitText}</span>
+              <span className="block text-[10px] text-on-surface-variant font-bold">DAP (P)</span>
+              <span className="block text-xs font-bold text-secondary mt-1">{result.p} {result.unitText}</span>
             </div>
             <div className="bg-tertiary-container/10 border border-tertiary-container/20 rounded-xl p-3 text-center">
-              <span className="block font-label-sm text-label-sm text-on-surface-variant font-bold">MOP (K)</span>
-              <span className="block font-title-md text-title-md font-bold text-tertiary mt-1">{result.k} {result.unitText}</span>
+              <span className="block text-[10px] text-on-surface-variant font-bold">MOP (K)</span>
+              <span className="block text-xs font-bold text-tertiary mt-1">{result.k} {result.unitText}</span>
             </div>
           </div>
 
@@ -222,8 +222,8 @@ const FertilizerHelpScreen = () => {
           <div className="bg-white rounded-xl p-3 border border-outline-variant/30 flex gap-2.5 items-start">
             <span className="material-symbols-outlined text-primary text-lg fill">psychology</span>
             <div>
-              <h4 className="font-title-md text-title-md font-bold text-on-surface">{isTel ? 'AI సలహా' : 'AI Advice'}</h4>
-              <p className="font-body-md text-body-md text-on-surface-variant mt-0.5 leading-relaxed">{result.advice}</p>
+              <h4 className="text-xs font-bold text-on-surface">{isTel ? 'AI సలహా' : 'AI Advice'}</h4>
+              <p className="text-[10px] text-on-surface-variant mt-0.5 leading-relaxed">{result.advice}</p>
             </div>
           </div>
         </section>

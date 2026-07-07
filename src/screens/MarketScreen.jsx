@@ -9,6 +9,7 @@ const MarketScreen = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const isTel = language === 'te';
+  const modalCartItem = selectedProduct ? cart.find((item) => item.id === selectedProduct.id) : null;
 
   const products = [
     { 
@@ -123,39 +124,64 @@ const MarketScreen = () => {
 
       {/* Products Grid */}
       <section className="grid grid-cols-2 gap-3">
-        {filteredProducts.map((p) => (
-          <article 
-            key={p.id} 
-            onClick={() => setSelectedProduct(p)}
-            className="bg-surface-container-lowest rounded-2xl p-3 shadow-sm border border-outline-variant/20 hover:shadow-md hover:scale-[1.01] transition-all flex flex-col justify-between cursor-pointer"
-          >
-            <div className="w-full h-28 rounded-lg border border-outline-variant/10 shadow-sm mb-2 overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#ffffff' }}>
-              <img 
-                alt={p.title} 
-                className="w-full h-full object-cover mix-blend-multiply" 
-                src={p.img}
-              />
-            </div>
-            <div className="flex-grow flex flex-col mb-2">
-              <span className="font-label-sm text-label-sm text-outline uppercase font-bold tracking-wider">{p.brand}</span>
-              <h3 className="font-title-md text-title-md text-on-surface mt-0.5 leading-tight font-bold">{p.title}</h3>
-              <div className="mt-2">
-                <p className="font-body-lg text-body-lg text-primary font-bold">₹{p.price}</p>
-                <p className="font-label-sm text-label-sm text-on-surface-variant font-medium">/ {p.unit}</p>
-              </div>
-            </div>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent opening product details modal
-                addToCart(p);
-              }}
-              className="w-full h-9 bg-primary text-white rounded-lg font-title-md text-title-md flex items-center justify-center gap-1 active:scale-95 transition-transform"
+        {filteredProducts.map((p) => {
+          const cartItem = cart.find((item) => item.id === p.id);
+          return (
+            <article 
+              key={p.id}
+              onClick={() => setSelectedProduct(p)}
+              className="bg-surface-container-lowest rounded-2xl p-3 shadow-sm border border-outline-variant/20 hover:shadow-md hover:scale-[1.01] transition-all flex flex-col justify-between cursor-pointer"
             >
-              <span className="material-symbols-outlined text-sm">shopping_cart</span>
-              {t('addToCart')}
-            </button>
-          </article>
-        ))}
+              <div className="w-full h-28 rounded-lg border border-outline-variant/10 shadow-sm mb-2 overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#ffffff' }}>
+                <img 
+                  alt={p.title} 
+                  className="w-full h-full object-cover mix-blend-multiply" 
+                  src={p.img}
+                />
+              </div>
+              <div className="flex-grow flex flex-col mb-2">
+                <span className="text-[9px] text-outline uppercase font-bold tracking-wider">{p.brand}</span>
+                <h3 className="text-xs font-bold text-on-surface mt-0.5 leading-tight">{p.title}</h3>
+                <div className="mt-2">
+                  <p className="text-sm font-bold text-primary">₹{p.price}</p>
+                  <p className="text-[9px] text-on-surface-variant font-medium">/ {p.unit}</p>
+                </div>
+              </div>
+              
+              {cartItem ? (
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full h-9 bg-primary text-white rounded-lg text-xs font-semibold flex items-center justify-between px-2"
+                >
+                  <button
+                    onClick={() => updateCartQty(p.id, -1)}
+                    className="w-7 h-7 rounded-md hover:bg-white/10 active:scale-90 transition-transform flex items-center justify-center font-bold text-base"
+                  >
+                    —
+                  </button>
+                  <span className="font-bold text-xs text-white">{cartItem.quantity}</span>
+                  <button
+                    onClick={() => updateCartQty(p.id, 1)}
+                    className="w-7 h-7 rounded-md hover:bg-white/10 active:scale-90 transition-transform flex items-center justify-center font-bold text-base"
+                  >
+                    +
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent opening product details modal
+                    addToCart(p);
+                  }}
+                  className="w-full h-9 bg-primary text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                >
+                  <span className="material-symbols-outlined text-sm">shopping_cart</span>
+                  {t('addToCart')}
+                </button>
+              )}
+            </article>
+          );
+        })}
       </section>
 
       {/* Product Details Modal Overlay */}
@@ -186,21 +212,21 @@ const MarketScreen = () => {
                 />
               </div>
               <div className="flex-1">
-                <span className="font-label-sm text-label-sm text-outline uppercase font-extrabold tracking-wider">{selectedProduct.brand}</span>
-                <h4 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mt-0.5 leading-tight font-bold">{selectedProduct.title}</h4>
+                <span className="text-[9px] text-outline uppercase font-extrabold tracking-wider">{selectedProduct.brand}</span>
+                <h4 className="text-sm font-bold text-on-surface mt-0.5 leading-tight">{selectedProduct.title}</h4>
                 <div className="mt-2 flex items-baseline gap-1">
-                  <span className="font-display-lg text-display-lg text-primary font-bold">₹{selectedProduct.price}</span>
-                  <span className="font-body-md text-body-md text-on-surface-variant font-medium">/ {selectedProduct.unit}</span>
+                  <span className="text-base font-bold text-primary">₹{selectedProduct.price}</span>
+                  <span className="text-xs text-on-surface-variant font-medium">/ {selectedProduct.unit}</span>
                 </div>
               </div>
             </div>
 
             {/* Description */}
             <div className="space-y-1">
-              <h5 className="font-label-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider">
+              <h5 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
                 {isTel ? 'వివరణ' : 'Description'}
               </h5>
-              <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              <p className="text-xs text-on-surface-variant leading-relaxed">
                 {selectedProduct.desc}
               </p>
             </div>
@@ -208,10 +234,10 @@ const MarketScreen = () => {
             {/* Price History Chart */}
             <div className="space-y-2 border-t border-outline-variant/20 pt-3">
               <div className="flex justify-between items-center">
-                <h5 className="font-label-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider">
+                <h5 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
                   {isTel ? '6 నెలల ధరల ట్రెండ్' : '6-Month Price Trend'}
                 </h5>
-                <span className="font-label-sm text-label-sm font-bold text-primary bg-primary-container/10 px-2 py-0.5 rounded-full">
+                <span className="text-[9px] font-bold text-primary bg-primary-container/10 px-2 py-0.5 rounded-full">
                   {isTel ? 'ధర విశ్లేషణ' : 'Price History'}
                 </span>
               </div>
@@ -247,7 +273,7 @@ const MarketScreen = () => {
               </div>
 
               {/* Axis labels with prices */}
-              <div className="flex justify-between px-1 font-label-sm text-label-sm font-bold text-on-surface-variant tracking-wide">
+              <div className="flex justify-between px-1 font-semibold text-[9px] text-on-surface-variant tracking-wide">
                 <div className="text-center"><span>Oct</span><span className="block text-[8px] text-outline font-semibold mt-0.5">{selectedProduct.monthlyPrices[0]}</span></div>
                 <div className="text-center"><span>Nov</span><span className="block text-[8px] text-outline font-semibold mt-0.5">{selectedProduct.monthlyPrices[1]}</span></div>
                 <div className="text-center"><span>Dec</span><span className="block text-[8px] text-outline font-semibold mt-0.5">{selectedProduct.monthlyPrices[2]}</span></div>
@@ -259,16 +285,35 @@ const MarketScreen = () => {
 
             {/* Action Button */}
             <div className="pt-2">
-              <button
-                onClick={() => {
-                  addToCart(selectedProduct);
-                  setSelectedProduct(null);
-                }}
-                className="w-full h-12 bg-primary text-white rounded-xl font-bold font-title-md text-title-md flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
-              >
-                <span className="material-symbols-outlined text-sm">shopping_cart</span>
-                {t('addToCart')}
-              </button>
+              {modalCartItem ? (
+                <div 
+                  className="w-full h-12 bg-primary text-white rounded-xl font-bold font-title-md text-title-md flex items-center justify-between px-4 shadow-sm"
+                >
+                  <button
+                    onClick={() => updateCartQty(selectedProduct.id, -1)}
+                    className="w-8 h-8 rounded-lg hover:bg-white/10 active:scale-90 transition-transform flex items-center justify-center font-bold text-lg"
+                  >
+                    —
+                  </button>
+                  <span className="font-bold text-sm text-white">{modalCartItem.quantity}</span>
+                  <button
+                    onClick={() => updateCartQty(selectedProduct.id, 1)}
+                    className="w-8 h-8 rounded-lg hover:bg-white/10 active:scale-90 transition-transform flex items-center justify-center font-bold text-lg"
+                  >
+                    +
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    addToCart(selectedProduct);
+                  }}
+                  className="w-full h-12 bg-primary text-white rounded-xl font-bold font-title-md text-title-md flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
+                >
+                  <span className="material-symbols-outlined text-sm">shopping_cart</span>
+                  {t('addToCart')}
+                </button>
+              )}
             </div>
 
           </div>
@@ -279,10 +324,14 @@ const MarketScreen = () => {
       {cartItemCount > 0 && (
         <button 
           onClick={() => setShowCart(true)}
-          className="fixed bottom-[96px] left-md bg-gradient-to-b from-[#feae2c] to-[#d48100] text-on-secondary-container font-bold px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 active:scale-95 transition-transform z-30"
+          className="fixed bottom-[96px] right-md w-12 h-12 bg-primary text-white rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform z-30"
+          aria-label="Open shopping cart"
         >
-          <span className="material-symbols-outlined">shopping_bag</span>
-          <span className="text-xs">{cartItemCount} {isTel ? 'వస్తువులు' : 'Items'} (₹{cartTotal})</span>
+          <span className="material-symbols-outlined text-[20px]">shopping_cart</span>
+          {/* Small badge with count */}
+          <span className="absolute -top-1 -right-1 bg-[#FF3B30] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-white shadow-sm">
+            {cartItemCount}
+          </span>
         </button>
       )}
 

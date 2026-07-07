@@ -106,8 +106,8 @@ const SafetyGuideScreen = () => {
               </button>
             </div>
             <div>
-              <h3 className="font-title-md text-title-md text-on-surface mb-1 font-bold">{g.title}</h3>
-              <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">{g.text}</p>
+              <h3 className="font-bold text-xs text-on-surface mb-1">{g.title}</h3>
+              <p className="text-[10px] text-on-surface-variant leading-relaxed">{g.text}</p>
             </div>
           </div>
         ))}
@@ -117,8 +117,8 @@ const SafetyGuideScreen = () => {
       <div className="bg-surface-container-low rounded-xl p-4 flex gap-3 items-start border border-primary/20 shadow-sm mb-4">
         <span className="material-symbols-outlined text-primary text-xl mt-0.5 fill">tips_and_updates</span>
         <div className="flex-grow">
-          <h4 className="font-title-md text-title-md text-on-surface mb-1 font-bold">{isTel ? 'AI సిఫార్సు' : 'AI Recommendation'}</h4>
-          <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">{aiAdvice}</p>
+          <h4 className="font-bold text-xs text-on-surface mb-1">{isTel ? 'AI సిఫార్సు' : 'AI Recommendation'}</h4>
+          <p className="text-[10px] text-on-surface-variant leading-relaxed">{aiAdvice}</p>
         </div>
         <button 
           onClick={() => speakText(aiAdvice, 99)}

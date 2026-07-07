@@ -116,8 +116,8 @@ const AlertsScreen = () => {
                   </span>
                   <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">{a.time}</span>
                 </div>
-                <h4 className="font-title-md text-title-md text-on-surface mb-1 font-bold">{a.title}</h4>
-                <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">{a.text}</p>
+                <h4 className="font-bold text-xs text-on-surface mb-1">{a.title}</h4>
+                <p className="text-[10px] text-on-surface-variant leading-relaxed">{a.text}</p>
                 
                 {a.actionText && (
                   <button 

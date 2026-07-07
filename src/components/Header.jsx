@@ -2,8 +2,10 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 
 const Header = () => {
-  const { currentScreen, language, setLanguage, navigateBack, isDark, toggleDarkMode, t, logout } = useApp();
+  const { currentScreen, language, setLanguage, navigateBack, isDark, toggleDarkMode, t, logout, clearWeatherLocation } = useApp();
   const [showLogoutMenu, setShowLogoutMenu] = React.useState(false);
+
+  const isTel = language === 'te';
 
   if (currentScreen === 'login') return null;
 
@@ -34,25 +36,29 @@ const Header = () => {
           </div>
         )}
         
-        {/* Logo and Brand Title */}
-        <div className="flex items-center gap-1.5">
-          <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 relative overflow-hidden">
-            <span className="material-symbols-outlined text-primary text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>eco</span>
-          </div>
-          <h1 className="font-title-md text-title-md font-bold text-primary tracking-tight">
-            {t('appName')}
-          </h1>
-        </div>
+        <h1 className="font-title-md text-title-md font-bold text-primary tracking-tight">
+          {t('appName')}
+        </h1>
 
         {/* Logout Popover Dropdown */}
         {showLogoutMenu && (
-          <div className="absolute top-12 left-0 bg-white dark:bg-[#1d201c] border border-outline-variant/30 rounded-xl p-1.5 shadow-lg z-50 flex flex-col min-w-[120px] animate-in fade-in slide-in-from-top-2 duration-150">
+          <div className="absolute top-12 left-0 bg-white dark:bg-[#1d201c] border border-outline-variant/30 rounded-xl p-1.5 shadow-lg z-50 flex flex-col min-w-[150px] animate-in fade-in slide-in-from-top-2 duration-150">
+            <button 
+              onClick={() => {
+                setShowLogoutMenu(false);
+                clearWeatherLocation();
+              }}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-[10px] font-bold text-on-surface hover:bg-surface-container active:scale-95 transition-all text-left w-full border-b border-outline-variant/20 pb-2 mb-1.5"
+            >
+              <span className="material-symbols-outlined text-sm text-primary">location_off</span>
+              {isTel ? 'ప్రాంతాన్ని రీసెట్ చేయి' : 'Reset Location'}
+            </button>
             <button 
               onClick={() => {
                 setShowLogoutMenu(false);
                 logout();
               }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-error hover:bg-error-container/10 active:scale-95 transition-all text-left w-full"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold text-error hover:bg-error-container/10 active:scale-95 transition-all text-left w-full"
             >
               <span className="material-symbols-outlined text-sm">logout</span>
               {t('logout')}

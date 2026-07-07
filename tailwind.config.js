@@ -57,14 +57,14 @@ export default {
         "outline": "#707a6c"
       },
       fontSize: {
-        "display-lg": ["2.25rem", { lineHeight: "2.75rem", fontWeight: "700" }],
-        "headline-lg": ["1.75rem", { lineHeight: "2.25rem", fontWeight: "700" }],
-        "headline-lg-mobile": ["1.5rem", { lineHeight: "2rem", fontWeight: "700" }],
-        "title-md": ["1rem", { lineHeight: "1.5rem", fontWeight: "600" }],
-        "body-lg": ["1rem", { lineHeight: "1.5rem", fontWeight: "400" }],
-        "body-md": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "400" }],
-        "label-md": ["0.75rem", { lineHeight: "1rem", fontWeight: "500" }],
-        "label-sm": ["0.6875rem", { lineHeight: "0.875rem", fontWeight: "500" }]
+        "display-lg": "1.75rem",
+        "headline-lg": "1.5rem",
+        "headline-lg-mobile": "1.25rem",
+        "title-md": "0.875rem",
+        "body-lg": "0.9375rem",
+        "body-md": "0.75rem",
+        "label-md": "0.6875rem",
+        "label-sm": "0.625rem"
       },
       borderRadius: {
         "DEFAULT": "0.25rem",

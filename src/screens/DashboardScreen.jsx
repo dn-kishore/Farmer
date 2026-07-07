@@ -2,7 +2,8 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 
 const DashboardScreen = () => {
-  const { navigateTo, t } = useApp();
+  const { navigateTo, t, language, weatherData } = useApp();
+  const isTel = language === 'te';
 
   const tiles = [
     { id: 'purchases', title: 'purchases', desc: 'trackSupplies', icon: 'shopping_cart', color: 'bg-surface-container dark:bg-white/10 text-primary dark:text-[#88d982]', bg: 'bg-surface-container-lowest' },
@@ -30,20 +31,52 @@ const DashboardScreen = () => {
         >
           <div className="absolute -right-8 -top-8 w-32 h-32 bg-secondary-fixed opacity-40 blur-2xl rounded-full"></div>
           <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-primary-fixed opacity-20 blur-2xl rounded-full"></div>
-          <div className="relative z-10 flex justify-between items-center">
-            <div>
-              <div className="flex items-center gap-xs text-secondary dark:text-[#ffb955] mb-xs">
-                <span className="material-symbols-outlined text-[16px] dark:text-[#ffb955]" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
-                <span className="font-label-sm text-label-sm font-semibold">{t('location')}</span>
+          <div className="relative z-10 flex justify-between items-center min-h-[76px]">
+            {weatherData.loading ? (
+              <div className="w-full flex items-center justify-center gap-2 py-4 text-xs font-semibold text-on-surface-variant">
+                <span className="material-symbols-outlined animate-spin text-base">sync</span>
+                <span>{isTel ? 'వాతావరణ వివరాలు లోడ్ అవుతున్నాయి...' : 'Loading weather details...'}</span>
               </div>
-              <div className="font-display-lg text-display-lg text-on-background leading-none font-bold">{t('temp')}</div>
-              <div className="font-label-md text-label-md text-on-surface-variant mt-2 font-medium">
-                {t('partlyCloudy')} • {t('humidity')}: 65%
+            ) : !weatherData.location ? (
+              <div className="w-full flex justify-between items-center py-2">
+                <div>
+                  <div className="flex items-center gap-xs text-secondary dark:text-[#ffb955] mb-xs">
+                    <span className="material-symbols-outlined text-[16px] dark:text-[#ffb955]" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
+                    <span className="font-label-sm text-label-sm font-semibold">
+                      {isTel ? 'వాతావరణ ప్రాంతం' : 'Weather Location'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-on-surface-variant font-medium">
+                    {isTel ? 'వాతావరణ వివరాల కోసం ప్రాంతాన్ని సెట్ చేయండి' : 'Tap to set location for weather updates'}
+                  </p>
+                </div>
+                <div className="text-secondary dark:text-[#ffb955] drop-shadow-md">
+                  <span className="material-symbols-outlined text-[48px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_location_alt</span>
+                </div>
               </div>
-            </div>
-            <div className="text-secondary dark:text-[#ffb955] drop-shadow-md">
-              <span className="material-symbols-outlined text-[72px]" style={{ fontVariationSettings: "'FILL' 1" }}>partly_cloudy_day</span>
-            </div>
+            ) : (
+              <>
+                <div>
+                  <div className="flex items-center gap-xs text-secondary dark:text-[#ffb955] mb-xs">
+                    <span className="material-symbols-outlined text-[16px] dark:text-[#ffb955]" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
+                    <span className="font-label-sm text-label-sm font-semibold">
+                      {isTel ? weatherData.teluguLocation : weatherData.location}
+                    </span>
+                  </div>
+                  <div className="font-display-lg text-display-lg text-on-background leading-none font-bold">
+                    {weatherData.temp}°
+                  </div>
+                  <div className="font-label-md text-label-md text-on-surface-variant mt-2 font-medium">
+                    {isTel ? weatherData.teluguCondition : weatherData.condition} • {isTel ? 'తేమ' : 'Humidity'}: {weatherData.humidity}%
+                  </div>
+                </div>
+                <div className="text-secondary dark:text-[#ffb955] drop-shadow-md">
+                  <span className="material-symbols-outlined text-[72px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {weatherData.icon}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
