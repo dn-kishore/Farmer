@@ -8,7 +8,6 @@ const DashboardScreen = () => {
     { id: 'purchases', title: 'purchases', desc: 'trackSupplies', icon: 'shopping_cart', color: 'bg-surface-container dark:bg-white/10 text-primary dark:text-[#88d982]', bg: 'bg-surface-container-lowest' },
     { id: 'expenses', title: 'expenses', desc: 'expenseSub', icon: 'account_balance_wallet', color: 'bg-error-container dark:bg-[#ba1a1a]/30 text-on-error-container dark:text-[#ffb3ac]', bg: 'bg-surface-container-lowest' },
     { id: 'crop_diagnosis', title: 'diseaseCheck', desc: 'scanCrop', icon: 'pest_control', color: 'bg-tertiary-container/10 dark:bg-white/10 text-tertiary dark:text-[#ffb3ac]', bg: 'bg-surface-container-lowest' },
-    { id: 'price_history', title: 'priceHistory', desc: '7-day forecast', icon: 'trending_up', color: 'bg-secondary-container/20 dark:bg-white/10 text-secondary dark:text-[#ffb955]', bg: 'bg-surface-container-lowest' },
     { id: 'fertilizer_help', title: 'fertilizerHelp', desc: 'Calculate N-P-K', icon: 'calculate', color: 'bg-primary-container/10 dark:bg-white/10 text-primary dark:text-[#88d982]', bg: 'bg-surface-container-lowest' },
     { id: 'safety_guide', title: 'safetyGuide', desc: 'Safety Checklists', icon: 'health_and_safety', color: 'bg-tertiary-container/10 dark:bg-white/10 text-tertiary dark:text-[#ffb3ac]', bg: 'bg-surface-container-lowest' }
   ];

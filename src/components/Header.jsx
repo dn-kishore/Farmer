@@ -2,13 +2,14 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 
 const Header = () => {
-  const { currentScreen, language, setLanguage, navigateBack, isDark, toggleDarkMode, t } = useApp();
+  const { currentScreen, language, setLanguage, navigateBack, isDark, toggleDarkMode, t, logout } = useApp();
+  const [showLogoutMenu, setShowLogoutMenu] = React.useState(false);
 
   if (currentScreen === 'login') return null;
 
   return (
     <header className="bg-surface/90 dark:bg-surface-dim/90 backdrop-blur-md border-b border-outline-variant/30 flex justify-between items-center px-md py-sm w-full sticky top-0 z-50 shadow-sm">
-      <div className="flex items-center gap-sm">
+      <div className="flex items-center gap-sm relative">
         {/* Back Button if not on Dashboard */}
         {currentScreen !== 'dashboard' && (
           <button 
@@ -21,7 +22,10 @@ const Header = () => {
         
         {/* Avatar */}
         {currentScreen === 'dashboard' && (
-          <div className="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center overflow-hidden border border-primary-container/30">
+          <div 
+            onClick={() => setShowLogoutMenu(!showLogoutMenu)}
+            className="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center overflow-hidden border border-primary-container/30 cursor-pointer active:scale-95 transition-transform"
+          >
             <img 
               alt="Farmer Profile" 
               className="w-full h-full object-cover" 
@@ -30,9 +34,31 @@ const Header = () => {
           </div>
         )}
         
-        <h1 className="font-title-md text-title-md font-bold text-primary tracking-tight">
-          {t('appName')}
-        </h1>
+        {/* Logo and Brand Title */}
+        <div className="flex items-center gap-1.5">
+          <div className="w-6 h-6 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 relative overflow-hidden">
+            <span className="material-symbols-outlined text-primary text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>eco</span>
+          </div>
+          <h1 className="font-title-md text-title-md font-bold text-primary tracking-tight">
+            {t('appName')}
+          </h1>
+        </div>
+
+        {/* Logout Popover Dropdown */}
+        {showLogoutMenu && (
+          <div className="absolute top-12 left-0 bg-white dark:bg-[#1d201c] border border-outline-variant/30 rounded-xl p-1.5 shadow-lg z-50 flex flex-col min-w-[120px] animate-in fade-in slide-in-from-top-2 duration-150">
+            <button 
+              onClick={() => {
+                setShowLogoutMenu(false);
+                logout();
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-error hover:bg-error-container/10 active:scale-95 transition-all text-left w-full"
+            >
+              <span className="material-symbols-outlined text-sm">logout</span>
+              {t('logout')}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-2">

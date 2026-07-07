@@ -76,13 +76,13 @@ const AlertsScreen = () => {
         <h2 className="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">
           {isTel ? 'హెచ్చరికలు & నోటిఫికేషన్లు' : 'Alerts & Notifications'}
         </h2>
-        <p className="font-body-md text-sm text-on-surface-variant">
+        <p className="font-body-md text-body-md text-on-surface-variant">
           {isTel ? 'మీ తాజా పొలం సమాచారం ఇక్కడ చూడండి.' : 'Your latest AI-driven field insights.'}
         </p>
       </div>
 
       <div className="space-y-4">
-        <h3 className="font-title-md text-sm text-on-surface-variant font-semibold border-b border-outline-variant/35 pb-1">
+        <h3 className="font-title-md text-title-md text-on-surface-variant font-semibold border-b border-outline-variant/35 pb-1">
           {isTel ? 'ఈరోజు' : 'Today'}
         </h3>
         
@@ -111,18 +111,18 @@ const AlertsScreen = () => {
               </div>
               <div className="flex-1 pr-6">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider">
+                  <span className="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded-full font-label-sm text-label-sm uppercase font-bold tracking-wider">
                     {a.badge}
                   </span>
-                  <span className="text-[10px] text-on-surface-variant font-medium">{a.time}</span>
+                  <span className="font-label-sm text-label-sm text-on-surface-variant font-medium">{a.time}</span>
                 </div>
-                <h4 className="font-semibold text-sm text-on-surface mb-1">{a.title}</h4>
-                <p className="font-body-md text-xs text-on-surface-variant leading-relaxed">{a.text}</p>
+                <h4 className="font-title-md text-title-md text-on-surface mb-1 font-bold">{a.title}</h4>
+                <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">{a.text}</p>
                 
                 {a.actionText && (
                   <button 
                     onClick={a.action}
-                    className="mt-2 font-semibold text-xs text-primary flex items-center gap-0.5 hover:underline active:scale-95 transition-transform"
+                    className="mt-2 font-bold font-label-md text-label-md text-primary flex items-center gap-0.5 hover:underline active:scale-95 transition-transform"
                   >
                     {a.actionText} 
                     <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

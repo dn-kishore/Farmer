@@ -15,7 +15,7 @@ const NavBar = () => {
   ];
 
   return (
-    <nav className="bg-surface/90 backdrop-blur-lg border-t border-outline-variant/30 fixed bottom-0 w-full z-40 flex justify-around items-center px-2 py-3 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)] md:absolute md:bottom-0">
+    <nav className="bg-surface border-t border-outline-variant/30 fixed bottom-0 w-full z-40 flex justify-around items-center px-2 py-3 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)] md:absolute md:bottom-0">
       {tabs.map((tab) => {
         const isActive = currentScreen === tab.id;
         return (

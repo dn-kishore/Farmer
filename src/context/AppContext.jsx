@@ -6,8 +6,11 @@ export const useApp = () => useContext(AppContext);
 
 export const AppProvider = ({ children }) => {
   const [language, setLanguage] = useState('en'); // 'en' or 'te'
-  const [currentScreen, setCurrentScreen] = useState('login'); // 'login', 'dashboard', 'weather', etc.
+  const [currentScreen, setCurrentScreen] = useState(() => {
+    return localStorage.getItem('isLoggedIn') === 'true' ? 'dashboard' : 'login';
+  });
   const [screenHistory, setScreenHistory] = useState([]);
+  const [fertilizerHelpMode, setFertilizerHelpMode] = useState('recommendation'); // 'recommendation' or 'quantity'
   const [cart, setCart] = useState([]);
   const [isDark, setIsDark] = useState(false);
 
@@ -66,6 +69,12 @@ export const AppProvider = ({ children }) => {
     } else {
       setCurrentScreen('dashboard');
     }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('isLoggedIn');
+    setScreenHistory([]);
+    setCurrentScreen('login');
   };
 
   // Cart operations
@@ -176,7 +185,9 @@ export const AppProvider = ({ children }) => {
         chilli: "Chilli",
         cotton: "Cotton",
         calculate: "Calculate",
-        recommendation: "Recommendation"
+        recommendation: "Recommendation",
+        fertilizerRecommendation: "Fertilizer Recommendation",
+        quantityCalculator: "Quantity Calculator"
       },
       te: {
         appName: "అగ్రిఅసిస్ట్ AI",
@@ -227,7 +238,9 @@ export const AppProvider = ({ children }) => {
         chilli: "మిరప",
         cotton: "ప్రత్తి",
         calculate: "లెక్కించు",
-        recommendation: "సిఫార్సు"
+        recommendation: "సిఫార్సు",
+        fertilizerRecommendation: "ఎరువుల సిఫార్సు",
+        quantityCalculator: "పరిమాణ క్యాలిక్యులేటర్"
       }
     };
     return translations[language][key] || translations['en'][key] || key;
@@ -255,7 +268,10 @@ export const AppProvider = ({ children }) => {
       setDiagnoses,
       chatMessages,
       setChatMessages,
-      t
+      t,
+      logout,
+      fertilizerHelpMode,
+      setFertilizerHelpMode
     }}>
       {children}
     </AppContext.Provider>

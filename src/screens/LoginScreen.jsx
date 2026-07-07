@@ -13,6 +13,7 @@ const LoginScreen = () => {
       setErrorMsg(t('phone') + ' and ' + t('password') + ' are required.');
       return;
     }
+    localStorage.setItem('isLoggedIn', 'true');
     navigateTo('dashboard');
   };
 

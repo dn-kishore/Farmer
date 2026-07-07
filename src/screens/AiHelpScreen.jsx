@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 
 const AiHelpScreen = () => {
-  const { language, navigateTo, chatMessages, setChatMessages, t } = useApp();
+  const { language, navigateTo, chatMessages, setChatMessages, t, setFertilizerHelpMode } = useApp();
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' or 'tools'
   const [inputText, setInputText] = useState('');
   const [playingId, setPlayingId] = useState(null);
@@ -94,7 +94,7 @@ const AiHelpScreen = () => {
       <div className="flex bg-white border-b border-outline-variant/30 sticky top-0 z-30 shrink-0">
         <button
           onClick={() => setActiveTab('chat')}
-          className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+          className={`flex-1 py-3 font-title-md text-title-md font-bold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
             activeTab === 'chat' 
               ? 'border-primary text-primary bg-primary-container/5' 
               : 'border-transparent text-outline hover:text-primary'
@@ -105,7 +105,7 @@ const AiHelpScreen = () => {
         </button>
         <button
           onClick={() => setActiveTab('tools')}
-          className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+          className={`flex-1 py-3 font-title-md text-title-md font-bold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
             activeTab === 'tools' 
               ? 'border-primary text-primary bg-primary-container/5' 
               : 'border-transparent text-outline hover:text-primary'
@@ -132,7 +132,7 @@ const AiHelpScreen = () => {
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary animate-bounce">
                     <span className="material-symbols-outlined">smart_toy</span>
                   </div>
-                  <p className="text-xs text-on-surface-variant font-semibold">
+                  <p className="font-body-md text-body-md text-on-surface-variant font-semibold">
                     {isTel ? 'స్మార్ట్ చాట్ ప్రారంభించండి' : 'Ask me anything about your field'}
                   </p>
                 </div>
@@ -149,12 +149,12 @@ const AiHelpScreen = () => {
                       )}
                       
                       <div className="flex items-center gap-2 max-w-[82%]">
-                        <div className={`relative rounded-2xl p-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border text-xs font-semibold ${
+                        <div className={`relative rounded-2xl p-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border font-body-md text-body-md font-semibold ${
                           isAi 
                             ? 'bg-white border-outline-variant/30 text-on-surface' 
                             : 'bg-primary border-transparent text-on-primary'
                         }`}>
-                          <p className="leading-relaxed text-[13px]">{textContent}</p>
+                          <p className="leading-relaxed font-body-md text-body-md">{textContent}</p>
                         </div>
 
                         {/* Speaker icons IMMEDIATELY to the right of AI bubbles (48x48 touch target area) */}
@@ -185,19 +185,19 @@ const AiHelpScreen = () => {
             <div className="absolute bottom-[60px] left-0 w-full bg-gradient-to-t from-background via-background to-transparent py-2 px-md flex gap-2 overflow-x-auto border-t border-outline-variant/15 scrollbar-hide z-10 shrink-0">
               <button 
                 onClick={() => handleSend(isTel ? 'వరి పంటకు యూరియా వేయడం' : 'Paddy urea dose')}
-                className="bg-white border border-outline-variant/40 rounded-full px-4 py-2 text-[11px] font-bold text-primary shadow-sm hover:border-primary active:scale-95 transition-all shrink-0"
+                className="bg-white border border-outline-variant/40 rounded-full px-4 py-2 font-label-sm text-label-sm font-bold text-primary shadow-sm hover:border-primary active:scale-95 transition-all shrink-0"
               >
                 🌾 {isTel ? 'వరి ఎరువులు' : 'Paddy dose'}
               </button>
               <button 
                 onClick={() => handleSend(isTel ? 'ఈరోజు వర్షం పడుతుందా?' : 'Is it going to rain today?')}
-                className="bg-white border border-outline-variant/40 rounded-full px-4 py-2 text-[11px] font-bold text-secondary shadow-sm hover:border-secondary active:scale-95 transition-all shrink-0"
+                className="bg-white border border-outline-variant/40 rounded-full px-4 py-2 font-label-sm text-label-sm font-bold text-secondary shadow-sm hover:border-secondary active:scale-95 transition-all shrink-0"
               >
                 ☁️ {isTel ? 'వర్ష సూచన' : 'Rain forecast'}
               </button>
               <button 
                 onClick={() => handleSend(isTel ? 'టమోటా తెగుళ్లు పరీక్ష' : 'Tomato early blight treatment')}
-                className="bg-white border border-outline-variant/40 rounded-full px-4 py-2 text-[11px] font-bold text-tertiary shadow-sm hover:border-tertiary active:scale-95 transition-all shrink-0"
+                className="bg-white border border-outline-variant/40 rounded-full px-4 py-2 font-label-sm text-label-sm font-bold text-tertiary shadow-sm hover:border-tertiary active:scale-95 transition-all shrink-0"
               >
                 🛡️ {isTel ? 'టమోటా తెగులు' : 'Tomato blight'}
               </button>
@@ -215,7 +215,7 @@ const AiHelpScreen = () => {
               </button>
               
               <input 
-                className="flex-grow h-11 px-3 bg-[#F1F3F0] rounded-xl border border-transparent focus:bg-white focus:border-primary text-xs font-semibold outline-none"
+                className="flex-grow h-11 px-3 bg-[#F1F3F0] rounded-xl border border-transparent focus:bg-white focus:border-primary font-body-md text-body-md font-semibold outline-none"
                 type="text"
                 placeholder={isTel ? 'ప్రశ్న టైప్ చేయండి...' : 'Type your question...'}
                 value={inputText}
@@ -241,17 +241,20 @@ const AiHelpScreen = () => {
               
               {/* Card 1: Fertilizer Recommendation */}
               <div 
-                onClick={() => navigateTo('fertilizer_help')}
+                onClick={() => {
+                  setFertilizerHelpMode('recommendation');
+                  navigateTo('fertilizer_help');
+                }}
                 className="bg-surface-container-lowest rounded-2xl p-4 flex flex-col justify-between border border-outline-variant/20 shadow-sm hover:shadow-md active:scale-95 transition-all cursor-pointer aspect-square"
               >
                 <div className="w-11 h-11 rounded-xl bg-primary-container/20 text-primary flex items-center justify-center">
                   <span className="material-symbols-outlined text-xl">science</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-xs text-on-surface leading-tight">
+                  <h3 className="font-title-md text-title-md text-on-surface leading-tight font-bold">
                     {isTel ? 'ఎరువుల సిఫార్సు' : 'Fertilizer Recommendation'}
                   </h3>
-                  <p className="text-[10px] text-on-surface-variant mt-1.5 leading-relaxed">
+                  <p className="font-label-sm text-label-sm text-on-surface-variant mt-1.5 leading-relaxed">
                     {isTel ? 'నేల నివేదిక ఆధారంగా అవసరమైన ఎరువులను సిఫార్సు చేస్తుంది.' : 'Soil-specific nutrient balancing calculators.'}
                   </p>
                 </div>
@@ -259,17 +262,20 @@ const AiHelpScreen = () => {
 
               {/* Card 2: Quantity Calculator */}
               <div 
-                onClick={() => navigateTo('fertilizer_help')}
+                onClick={() => {
+                  setFertilizerHelpMode('quantity');
+                  navigateTo('fertilizer_help');
+                }}
                 className="bg-surface-container-lowest rounded-2xl p-4 flex flex-col justify-between border border-outline-variant/20 shadow-sm hover:shadow-md active:scale-95 transition-all cursor-pointer aspect-square"
               >
                 <div className="w-11 h-11 rounded-xl bg-secondary-container/20 text-secondary flex items-center justify-center">
                   <span className="material-symbols-outlined text-xl">calculate</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-xs text-on-surface leading-tight">
+                  <h3 className="font-title-md text-title-md text-on-surface leading-tight font-bold">
                     {isTel ? 'పరిమాణ క్యాలిక్యులేటర్' : 'Quantity Calculator'}
                   </h3>
-                  <p className="text-[10px] text-on-surface-variant mt-1.5 leading-relaxed">
+                  <p className="font-label-sm text-label-sm text-on-surface-variant mt-1.5 leading-relaxed">
                     {isTel ? 'పొలం సైజును బట్టి ఎరువుల బస్తాల లెక్కింపు.' : 'Dosage recommendations based on crop acres.'}
                   </p>
                 </div>
@@ -284,10 +290,10 @@ const AiHelpScreen = () => {
                   <span className="material-symbols-outlined text-xl">health_and_safety</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-xs text-on-surface leading-tight">
+                  <h3 className="font-title-md text-title-md text-on-surface leading-tight font-bold">
                     {isTel ? 'భద్రతా నియమాలు' : 'Safety Instructions'}
                   </h3>
-                  <p className="text-[10px] text-on-surface-variant mt-1.5 leading-relaxed">
+                  <p className="font-label-sm text-label-sm text-on-surface-variant mt-1.5 leading-relaxed">
                     {isTel ? 'రసాయనాలు వాడే ముందు తీసుకోవాల్సిన జాగ్రత్తలు.' : 'Essential guidelines for spraying safety.'}
                   </p>
                 </div>
@@ -302,10 +308,10 @@ const AiHelpScreen = () => {
                   <span className="material-symbols-outlined text-xl">energy_savings_leaf</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-xs text-on-surface leading-tight">
+                  <h3 className="font-title-md text-title-md text-on-surface leading-tight font-bold">
                     {isTel ? 'పంట తెగులు పరీక్ష' : 'Check My Crop'}
                   </h3>
-                  <p className="text-[10px] text-on-surface-variant mt-1.5 leading-relaxed">
+                  <p className="font-label-sm text-label-sm text-on-surface-variant mt-1.5 leading-relaxed">
                     {isTel ? 'ఆకు స్కాన్ ద్వారా తెగుళ్లను గుర్తించండి.' : 'Upload photos for leaf diseases identification.'}
                   </p>
                 </div>

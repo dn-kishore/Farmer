@@ -76,7 +76,7 @@ const SafetyGuideScreen = () => {
         <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2 font-bold">
           {isTel ? 'ఎరువుల భద్రతా గైడ్' : 'Fertilizer Safety Guide'}
         </h2>
-        <p className="font-body-md text-xs text-on-surface-variant max-w-[280px]">
+        <p className="font-body-md text-body-md text-on-surface-variant max-w-[280px]">
           {isTel 
             ? 'యూరియా మరియు ఇతర మిశ్రమాలను వాడే ముందు ఈ నియమాలను తప్పక అనుసరించండి.' 
             : 'Please follow these mandatory safety protocols before handling Urea and NPK blends.'}
@@ -106,8 +106,8 @@ const SafetyGuideScreen = () => {
               </button>
             </div>
             <div>
-              <h3 className="font-bold text-xs text-on-surface mb-1">{g.title}</h3>
-              <p className="text-[10px] text-on-surface-variant leading-relaxed">{g.text}</p>
+              <h3 className="font-title-md text-title-md text-on-surface mb-1 font-bold">{g.title}</h3>
+              <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">{g.text}</p>
             </div>
           </div>
         ))}
@@ -117,8 +117,8 @@ const SafetyGuideScreen = () => {
       <div className="bg-surface-container-low rounded-xl p-4 flex gap-3 items-start border border-primary/20 shadow-sm mb-4">
         <span className="material-symbols-outlined text-primary text-xl mt-0.5 fill">tips_and_updates</span>
         <div className="flex-grow">
-          <h4 className="font-bold text-xs text-on-surface mb-1">{isTel ? 'AI సిఫార్సు' : 'AI Recommendation'}</h4>
-          <p className="text-[10px] text-on-surface-variant leading-relaxed">{aiAdvice}</p>
+          <h4 className="font-title-md text-title-md text-on-surface mb-1 font-bold">{isTel ? 'AI సిఫార్సు' : 'AI Recommendation'}</h4>
+          <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">{aiAdvice}</p>
         </div>
         <button 
           onClick={() => speakText(aiAdvice, 99)}
@@ -135,7 +135,7 @@ const SafetyGuideScreen = () => {
       {/* Bottom Proceed Action */}
       <button 
         onClick={() => navigateTo('dashboard')}
-        className="w-full h-12 bg-gradient-to-b from-primary to-[#157a24] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1 shadow-md active:scale-95 transition-all mt-2"
+        className="w-full h-12 bg-gradient-to-b from-primary to-[#157a24] text-white rounded-xl font-bold text-title-md text-title-md flex items-center justify-center gap-1 shadow-md active:scale-95 transition-all mt-2"
       >
         {isTel ? 'నేను అర్థం చేసుకున్నాను మరియు కొనసాగుతాను' : 'I Understand & Proceed'}
         <span className="material-symbols-outlined text-[18px]">check_circle</span>

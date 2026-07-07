@@ -95,7 +95,7 @@ const MarketScreen = () => {
         <div className="relative group">
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
           <input 
-            className="w-full h-12 pl-12 pr-4 bg-surface-container border-2 border-transparent focus:border-primary focus:bg-surface-container-lowest rounded-xl text-sm transition-all outline-none" 
+            className="w-full h-12 pl-12 pr-4 bg-surface-container border-2 border-transparent focus:border-primary focus:bg-surface-container-lowest rounded-xl font-body-md text-body-md transition-all outline-none" 
             placeholder={t('searchMarket')} 
             type="text"
             value={search}
@@ -109,7 +109,7 @@ const MarketScreen = () => {
             <button
               key={cat}
               onClick={() => setCategory(cat)}
-              className={`snap-start shrink-0 px-4 py-2 rounded-xl font-semibold text-xs transition-all ${
+              className={`snap-start shrink-0 px-4 py-2 rounded-xl font-title-md text-title-md transition-all ${
                 category === cat 
                   ? 'bg-primary text-white shadow-sm' 
                   : 'bg-surface-container border border-outline-variant/35 text-on-surface-variant'
@@ -137,11 +137,11 @@ const MarketScreen = () => {
               />
             </div>
             <div className="flex-grow flex flex-col mb-2">
-              <span className="text-[9px] text-outline uppercase font-bold tracking-wider">{p.brand}</span>
-              <h3 className="font-semibold text-xs text-on-surface mt-0.5 leading-tight">{p.title}</h3>
+              <span className="font-label-sm text-label-sm text-outline uppercase font-bold tracking-wider">{p.brand}</span>
+              <h3 className="font-title-md text-title-md text-on-surface mt-0.5 leading-tight font-bold">{p.title}</h3>
               <div className="mt-2">
-                <p className="font-bold text-sm text-primary">₹{p.price}</p>
-                <p className="text-[9px] text-on-surface-variant font-medium">/ {p.unit}</p>
+                <p className="font-body-lg text-body-lg text-primary font-bold">₹{p.price}</p>
+                <p className="font-label-sm text-label-sm text-on-surface-variant font-medium">/ {p.unit}</p>
               </div>
             </div>
             <button 
@@ -149,7 +149,7 @@ const MarketScreen = () => {
                 e.stopPropagation(); // Prevent opening product details modal
                 addToCart(p);
               }}
-              className="w-full h-9 bg-primary text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-transform"
+              className="w-full h-9 bg-primary text-white rounded-lg font-title-md text-title-md flex items-center justify-center gap-1 active:scale-95 transition-transform"
             >
               <span className="material-symbols-outlined text-sm">shopping_cart</span>
               {t('addToCart')}
@@ -165,7 +165,7 @@ const MarketScreen = () => {
             
             {/* Header */}
             <div className="flex justify-between items-center border-b border-outline-variant/20 pb-3">
-              <h3 className="font-bold text-sm text-on-surface uppercase tracking-wide">
+              <h3 className="font-title-md text-title-md text-on-surface uppercase tracking-wide font-bold">
                 {isTel ? 'ఉత్పత్తి వివరాలు' : 'Product Details'}
               </h3>
               <button 
@@ -186,21 +186,21 @@ const MarketScreen = () => {
                 />
               </div>
               <div className="flex-1">
-                <span className="text-[9px] text-outline uppercase font-extrabold tracking-wider">{selectedProduct.brand}</span>
-                <h4 className="font-bold text-base text-on-surface mt-0.5 leading-tight">{selectedProduct.title}</h4>
+                <span className="font-label-sm text-label-sm text-outline uppercase font-extrabold tracking-wider">{selectedProduct.brand}</span>
+                <h4 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mt-0.5 leading-tight font-bold">{selectedProduct.title}</h4>
                 <div className="mt-2 flex items-baseline gap-1">
-                  <span className="font-bold text-lg text-primary">₹{selectedProduct.price}</span>
-                  <span className="text-xs text-on-surface-variant font-medium">/ {selectedProduct.unit}</span>
+                  <span className="font-display-lg text-display-lg text-primary font-bold">₹{selectedProduct.price}</span>
+                  <span className="font-body-md text-body-md text-on-surface-variant font-medium">/ {selectedProduct.unit}</span>
                 </div>
               </div>
             </div>
 
             {/* Description */}
             <div className="space-y-1">
-              <h5 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
+              <h5 className="font-label-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider">
                 {isTel ? 'వివరణ' : 'Description'}
               </h5>
-              <p className="text-xs text-on-surface-variant leading-relaxed">
+              <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
                 {selectedProduct.desc}
               </p>
             </div>
@@ -208,10 +208,10 @@ const MarketScreen = () => {
             {/* Price History Chart */}
             <div className="space-y-2 border-t border-outline-variant/20 pt-3">
               <div className="flex justify-between items-center">
-                <h5 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">
+                <h5 className="font-label-md text-label-md font-bold text-on-surface-variant uppercase tracking-wider">
                   {isTel ? '6 నెలల ధరల ట్రెండ్' : '6-Month Price Trend'}
                 </h5>
-                <span className="text-[9px] font-bold text-primary bg-primary-container/10 px-2 py-0.5 rounded-full">
+                <span className="font-label-sm text-label-sm font-bold text-primary bg-primary-container/10 px-2 py-0.5 rounded-full">
                   {isTel ? 'ధర విశ్లేషణ' : 'Price History'}
                 </span>
               </div>
@@ -247,7 +247,7 @@ const MarketScreen = () => {
               </div>
 
               {/* Axis labels with prices */}
-              <div className="flex justify-between px-1 text-[9px] font-bold text-on-surface-variant tracking-wide">
+              <div className="flex justify-between px-1 font-label-sm text-label-sm font-bold text-on-surface-variant tracking-wide">
                 <div className="text-center"><span>Oct</span><span className="block text-[8px] text-outline font-semibold mt-0.5">{selectedProduct.monthlyPrices[0]}</span></div>
                 <div className="text-center"><span>Nov</span><span className="block text-[8px] text-outline font-semibold mt-0.5">{selectedProduct.monthlyPrices[1]}</span></div>
                 <div className="text-center"><span>Dec</span><span className="block text-[8px] text-outline font-semibold mt-0.5">{selectedProduct.monthlyPrices[2]}</span></div>
@@ -264,7 +264,7 @@ const MarketScreen = () => {
                   addToCart(selectedProduct);
                   setSelectedProduct(null);
                 }}
-                className="w-full h-12 bg-primary text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
+                className="w-full h-12 bg-primary text-white rounded-xl font-bold font-title-md text-title-md flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
               >
                 <span className="material-symbols-outlined text-sm">shopping_cart</span>
                 {t('addToCart')}
@@ -293,7 +293,7 @@ const MarketScreen = () => {
             <div className="flex justify-between items-center border-b border-outline-variant/30 pb-3">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">shopping_cart</span>
-                <h3 className="font-title-md text-md text-on-surface font-bold">
+                <h3 className="font-title-md text-title-md text-on-surface font-bold">
                   {isTel ? 'మీ బుట్ట' : 'Shopping Cart'}
                 </h3>
               </div>
@@ -310,8 +310,8 @@ const MarketScreen = () => {
               {cart.map((item) => (
                 <div key={item.id} className="flex justify-between items-center bg-surface rounded-xl p-3 border border-outline-variant/20">
                   <div>
-                    <h4 className="font-semibold text-xs text-on-surface">{item.title}</h4>
-                    <p className="text-[10px] text-primary font-bold mt-0.5">₹{item.price}</p>
+                    <h4 className="font-title-md text-title-md text-on-surface font-bold">{item.title}</h4>
+                    <p className="font-label-md text-label-md text-primary font-bold mt-0.5">₹{item.price}</p>
                   </div>
                   <div className="flex items-center gap-2 bg-surface-container-high rounded-lg p-1">
                     <button 
@@ -320,7 +320,7 @@ const MarketScreen = () => {
                     >
                       <span className="material-symbols-outlined text-sm">remove</span>
                     </button>
-                    <span className="text-xs font-bold px-1">{item.quantity}</span>
+                    <span className="font-title-md text-title-md font-bold px-1">{item.quantity}</span>
                     <button 
                       onClick={() => updateCartQty(item.id, 1)}
                       className="w-6 h-6 flex items-center justify-center text-outline hover:text-primary"
@@ -334,16 +334,16 @@ const MarketScreen = () => {
 
             {/* Total & Checkout */}
             <div className="border-t border-outline-variant/30 pt-3 space-y-3">
-              <div className="flex justify-between items-center text-xs font-semibold">
+              <div className="flex justify-between items-center font-title-md text-title-md font-semibold">
                 <span className="text-on-surface-variant">{t('total')}</span>
-                <span className="text-primary text-base font-bold">₹{cartTotal.toLocaleString('en-IN')}</span>
+                <span className="text-primary font-headline-lg-mobile text-headline-lg-mobile font-bold">₹{cartTotal.toLocaleString('en-IN')}</span>
               </div>
               <button
                 onClick={() => {
                   checkout();
                   setShowCart(false);
                 }}
-                className="w-full h-12 bg-primary text-white rounded-xl font-bold text-xs flex items-center justify-center shadow-md active:scale-95 transition-transform"
+                className="w-full h-12 bg-primary text-white rounded-xl font-bold font-title-md text-title-md flex items-center justify-center shadow-md active:scale-95 transition-transform"
               >
                 {t('checkout')}
               </button>
