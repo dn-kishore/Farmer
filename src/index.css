@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #fafaf4;
+  --color-surface: #fafaf4;
+  --color-text: #1a1c19;
+  --color-text-muted: #40493d;
+  --color-border: rgba(191, 202, 186, 0.4);
+  --color-card-bg: #ffffff;
+  --color-surface-container: #eeeee9;
+  --color-surface-low: #f4f4ee;
+  --color-surface-high: #e8e8e3;
+  --color-surface-dim: #dadad5;
+}
+
+.dark {
+  --color-bg: #121411;
+  --color-surface: #121411;
+  --color-text: #f1f1ec;
+  --color-text-muted: #bfcaba;
+  --color-border: rgba(112, 122, 108, 0.5);
+  --color-card-bg: #1d201c;
+  --color-surface-container: #222521;
+  --color-surface-low: #181a17;
+  --color-surface-high: #2a2d28;
+  --color-surface-dim: #1e211d;
+}
+
+/* Additional custom scrollbar and global styling overrides if needed */
+body {
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Telugu', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Dark mode global overrides for hardcoded light backgrounds */
+.dark .bg-white {
+  background-color: var(--color-card-bg) !important;
+  color: var(--color-text) !important;
+}
+
+.dark .bg-white\/80,
+.dark .bg-white\/70,
+.dark .bg-\[\#fafaf4\]\/50 {
+  background-color: rgba(29, 32, 28, 0.85) !important;
+}
+
+.dark .text-on-surface-variant {
+  color: var(--color-text-muted) !important;
+}
+
+.dark .text-on-surface {
+  color: var(--color-text) !important;
+}
+
+.dark input, 
+.dark select {
+  background-color: var(--color-surface-container) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}

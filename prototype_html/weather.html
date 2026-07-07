@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AgriAssist AI - Weather</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2f312e",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#002204",
+                    "on-tertiary-fixed": "#410003",
+                    "on-tertiary": "#ffffff",
+                    "surface-bright": "#fafaf4",
+                    "surface-container": "#eeeee9",
+                    "secondary": "#835500",
+                    "surface-container-high": "#e8e8e3",
+                    "primary-container": "#2e7d32",
+                    "secondary-fixed-dim": "#ffb955",
+                    "surface": "#fafaf4",
+                    "inverse-primary": "#88d982",
+                    "tertiary-container": "#d02d2d",
+                    "secondary-container": "#feae2c",
+                    "on-tertiary-fixed-variant": "#930010",
+                    "tertiary": "#ac0c18",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#40493d",
+                    "on-primary-fixed-variant": "#005312",
+                    "inverse-on-surface": "#f1f1ec",
+                    "primary-fixed": "#a3f69c",
+                    "surface-dim": "#dadad5",
+                    "surface-container-highest": "#e3e3de",
+                    "outline": "#707a6c",
+                    "outline-variant": "#bfcaba",
+                    "on-error-container": "#93000a",
+                    "surface-variant": "#e3e3de",
+                    "on-primary-container": "#cbffc2",
+                    "on-secondary-container": "#6b4500",
+                    "on-primary": "#ffffff",
+                    "background": "#fafaf4",
+                    "on-tertiary-container": "#ffedeb",
+                    "primary": "#0d631b",
+                    "primary-fixed-dim": "#88d982",
+                    "on-background": "#1a1c19",
+                    "tertiary-fixed-dim": "#ffb3ac",
+                    "surface-container-low": "#f4f4ee",
+                    "tertiary-fixed": "#ffdad6",
+                    "secondary-fixed": "#ffddb4",
+                    "on-secondary-fixed": "#291800",
+                    "surface-tint": "#1b6d24",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#1a1c19",
+                    "error": "#ba1a1a",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed-variant": "#633f00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "md": "16px",
+                    "xl": "48px",
+                    "lg": "24px",
+                    "sm": "8px",
+                    "container-max": "1440px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "title-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "label-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-lg-mobile": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "label-sm": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-lg": [
+                            "Plus Jakarta Sans"
+                    ]
+            },
+            "fontSize": {
+                    "title-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "36px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.04em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(46, 125, 50, 0.1);
+        }
+        
+        .gradient-btn {
+            background: linear-gradient(180deg, theme('colors.primary-fixed') 0%, theme('colors.primary') 100%);
+            color: theme('colors.on-primary');
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-[80px] md:pb-0">
+<!-- TopAppBar -->
+<header class="bg-surface/70 dark:bg-inverse-surface/70 backdrop-blur-md border-b border-white/20 dark:border-white/10 shadow-sm docked full-width top-0 flex justify-between items-center px-md py-sm w-full sticky z-50">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-bold text-primary dark:text-primary-fixed tracking-tight">AgriAssist AI</span>
+</div>
+<button class="font-label-md text-label-md text-primary dark:text-primary-fixed hover:opacity-80 transition-opacity active:scale-95 duration-200 bg-surface-container-low px-3 py-1.5 rounded-full">
+            EN/తె
+        </button>
+</header>
+<main class="max-w-container-max mx-auto px-md md:px-lg py-lg space-y-xl md:grid md:grid-cols-12 md:gap-gutter md:space-y-0">
+<!-- Left Column: Primary Focus -->
+<div class="md:col-span-8 space-y-lg">
+<!-- AI Recommendation Card (Glassmorphism) -->
+<section class="glass-card ai-glow rounded-xl p-lg relative overflow-hidden transition-transform duration-300 hover:scale-[1.01] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
+<!-- Subtle background decorative element -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex items-start justify-between relative z-10 mb-6">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span class="font-label-md text-label-md text-primary tracking-wide uppercase">AI Field Insight</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface mb-2">Optimal Conditions for Top Dressing</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+                            Current soil moisture is 68% and light rain is forecasted in 6 hours. This creates an ideal window for applying nitrogen-based fertilizers to maximize absorption and minimize runoff.
+                        </p>
+</div>
+<div class="hidden sm:flex flex-col items-end">
+<span class="font-display-lg text-display-lg text-primary">24°</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Moderate Breeze</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 items-center">
+<button class="gradient-btn font-label-md text-label-md font-semibold px-md py-3 rounded-lg shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                        Schedule Application
+                    </button>
+<button class="bg-surface-container font-label-md text-label-md text-on-surface px-md py-3 rounded-lg hover:bg-surface-container-high transition-colors">
+                        View Soil Data
+                    </button>
+</div>
+</section>
+<!-- Current Metrics Bento -->
+<section class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<!-- Humidity -->
+<div class="bg-surface rounded-xl p-4 shadow-sm border border-surface-variant flex flex-col items-start hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-secondary-container">humidity_percentage</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-1">Humidity</span>
+<span class="font-title-md text-title-md text-on-surface">72%</span>
+</div>
+<!-- Wind -->
+<div class="bg-surface rounded-xl p-4 shadow-sm border border-surface-variant flex flex-col items-start hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-primary">air</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-1">Wind Speed</span>
+<span class="font-title-md text-title-md text-on-surface">12 km/h</span>
+</div>
+<!-- UV Index -->
+<div class="bg-surface rounded-xl p-4 shadow-sm border border-surface-variant flex flex-col items-start hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/20 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-tertiary">light_mode</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-1">UV Index</span>
+<span class="font-title-md text-title-md text-on-surface">Moderate</span>
+</div>
+<!-- Soil Temp -->
+<div class="bg-surface rounded-xl p-4 shadow-sm border border-surface-variant flex flex-col items-start hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed-dim/20 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-secondary">thermostat</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-1">Soil Temp</span>
+<span class="font-title-md text-title-md text-on-surface">18°C</span>
+</div>
+</section>
+</div>
+<!-- Right Column: Secondary / Forecast -->
+<div class="md:col-span-4 space-y-lg">
+<h2 class="font-title-md text-title-md text-on-surface border-b border-surface-variant pb-2">4-Day Outlook</h2>
+<div class="space-y-3">
+<!-- Tomorrow -->
+<div class="bg-surface rounded-xl p-4 flex items-center justify-between shadow-sm border border-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">rainy</span>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Tomorrow</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Light Rain</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-title-md text-title-md text-on-surface">22° / <span class="text-on-surface-variant">16°</span></div>
+</div>
+</div>
+<!-- Day 3 -->
+<div class="bg-surface rounded-xl p-4 flex items-center justify-between shadow-sm border border-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary-container text-3xl" style="font-variation-settings: 'FILL' 1;">partly_cloudy_day</span>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Wed, Oct 25</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Partly Cloudy</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-title-md text-title-md text-on-surface">25° / <span class="text-on-surface-variant">18°</span></div>
+</div>
+</div>
+<!-- Day 4 -->
+<div class="bg-surface rounded-xl p-4 flex items-center justify-between shadow-sm border border-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-tertiary-container text-3xl" style="font-variation-settings: 'FILL' 1;">clear_day</span>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Thu, Oct 26</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Sunny</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-title-md text-title-md text-on-surface">27° / <span class="text-on-surface-variant">19°</span></div>
+</div>
+</div>
+<!-- Day 5 -->
+<div class="bg-surface rounded-xl p-4 flex items-center justify-between shadow-sm border border-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-tertiary-container text-3xl" style="font-variation-settings: 'FILL' 1;">clear_day</span>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Fri, Oct 27</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Sunny</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-title-md text-title-md text-on-surface">28° / <span class="text-on-surface-variant">20°</span></div>
+</div>
+</div>
+</div>
+<div class="mt-4 p-4 rounded-xl bg-secondary-container/10 border border-secondary-container/20 flex gap-3 items-start">
+<span class="material-symbols-outlined text-secondary-container shrink-0">info</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Forecasts are localized to your primary field sector (North Block). Update location in settings for broader coverage.</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface/80 dark:bg-inverse-surface/80 backdrop-blur-lg docked full-width bottom-0 rounded-t-xl bg-surface-container-low/90 dark:bg-surface-container-high/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe border-t border-transparent">
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline-variant px-3 py-1 hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline-variant px-3 py-1 hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">storefront</span>
+<span class="font-label-sm text-label-sm">Market</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline-variant px-3 py-1 hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">smart_toy</span>
+<span class="font-label-sm text-label-sm">AI Help</span>
+</a>
+<!-- Active Tab: Weather -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed bg-primary-container/20 dark:bg-primary-container/40 rounded-xl px-3 py-1 hover:text-primary dark:hover:text-primary-fixed transition-colors active:scale-110 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">partly_cloudy_day</span>
+<span class="font-label-sm text-label-sm font-bold">Weather</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline-variant px-3 py-1 hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">notifications</span>
+<span class="font-label-sm text-label-sm">Alerts</span>
+</a>
+</nav>
+</body></html>

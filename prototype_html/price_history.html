@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Price History - AgriPulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error-container": "#ffdad6",
+                      "secondary-fixed": "#ffddb4",
+                      "on-primary-fixed": "#002204",
+                      "inverse-primary": "#88d982",
+                      "primary-fixed": "#a3f69c",
+                      "outline": "#707a6c",
+                      "secondary": "#835500",
+                      "tertiary-container": "#d02d2d",
+                      "tertiary": "#ac0c18",
+                      "on-primary-container": "#cbffc2",
+                      "on-tertiary-fixed": "#410003",
+                      "on-surface": "#1a1c19",
+                      "surface-variant": "#e3e3de",
+                      "on-tertiary": "#ffffff",
+                      "surface-tint": "#1b6d24",
+                      "on-tertiary-container": "#ffedeb",
+                      "secondary-fixed-dim": "#ffb955",
+                      "on-tertiary-fixed-variant": "#930010",
+                      "surface-bright": "#fafaf4",
+                      "on-surface-variant": "#40493d",
+                      "surface-container-lowest": "#ffffff",
+                      "outline-variant": "#bfcaba",
+                      "on-error": "#ffffff",
+                      "secondary-container": "#feae2c",
+                      "inverse-surface": "#2f312e",
+                      "surface-container-highest": "#e3e3de",
+                      "surface-container": "#eeeee9",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb3ac",
+                      "primary": "#0d631b",
+                      "on-secondary-container": "#6b4500",
+                      "surface-container-low": "#f4f4ee",
+                      "on-error-container": "#93000a",
+                      "background": "#fafaf4",
+                      "inverse-on-surface": "#f1f1ec",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "surface": "#fafaf4",
+                      "tertiary-fixed": "#ffdad6",
+                      "primary-fixed-dim": "#88d982",
+                      "on-primary-fixed-variant": "#005312",
+                      "surface-dim": "#dadad5",
+                      "on-secondary-fixed": "#291800",
+                      "on-background": "#1a1c19",
+                      "surface-container-high": "#e8e8e3",
+                      "primary-container": "#2e7d32",
+                      "on-secondary-fixed-variant": "#633f00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "sm": "8px",
+                      "xl": "48px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "lg": "24px",
+                      "container-max": "1440px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "title-md": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-panel {
+            background: rgba(250, 250, 244, 0.7); /* surface color with opacity */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(46, 125, 50, 0.15);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background min-h-screen text-on-background selection:bg-primary-container selection:text-on-primary-container pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/70 dark:bg-surface-dim/70 backdrop-blur-md border-b border-outline-variant/20 shadow-sm flex justify-between items-center px-lg py-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant/50">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<h1 class="font-display-lg text-[24px] font-bold text-primary dark:text-primary-fixed tracking-tight">AgriPulse</h1>
+</div>
+<button class="px-3 py-1.5 rounded-xl bg-surface-container text-primary font-label-md text-label-md hover:bg-surface-container-high transition-colors scale-95 active:opacity-80">
+            EN/తె
+        </button>
+</header>
+<!-- Main Canvas -->
+<main class="pt-24 px-md md:px-lg max-w-container-max mx-auto space-y-xl">
+<!-- Header & Search Section -->
+<section class="space-y-6">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface md:font-headline-lg md:text-headline-lg">Market Trends</h2>
+<!-- Category Tabs -->
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-6 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md whitespace-nowrap shadow-sm hover:scale-[1.02] transition-transform">
+                    Fertilizers
+                </button>
+<button class="px-6 py-2.5 rounded-xl bg-surface-container text-on-surface-variant font-label-md text-label-md whitespace-nowrap hover:bg-surface-container-high transition-colors">
+                    Crops
+                </button>
+</div>
+<!-- Search -->
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-[#F1F3F0] border-2 border-transparent rounded-xl py-3.5 pl-12 pr-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/70 focus:bg-surface-container-lowest focus:border-primary focus:ring-0 transition-all shadow-sm" placeholder="Search fertilizers (e.g., Urea, NPK)..." type="text"/>
+</div>
+</section>
+<!-- Trend Chart (Glass Tile) -->
+<section class="glass-panel rounded-[24px] p-md md:p-lg shadow-[0_4px_20px_rgba(0,0,0,0.05)] relative overflow-hidden">
+<div class="flex justify-between items-end mb-6">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Urea 50kg</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">6-Month Price Trend</p>
+</div>
+<div class="text-right">
+<span class="block font-headline-lg-mobile text-headline-lg-mobile text-primary">₹1,250</span>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary bg-primary-container/20 px-2 py-0.5 rounded-full mt-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +5.2%
+                    </span>
+</div>
+</div>
+<!-- Simulated Chart Area -->
+<div class="h-48 w-full relative mt-4 border-b border-outline-variant/30 border-l">
+<!-- Grid lines -->
+<div class="absolute inset-0 flex flex-col justify-between">
+<div class="border-t border-outline-variant/20 w-full h-0"></div>
+<div class="border-t border-outline-variant/20 w-full h-0"></div>
+<div class="border-t border-outline-variant/20 w-full h-0"></div>
+</div>
+<!-- SVG Trend Line -->
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<defs>
+<lineargradient id="chartGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0d631b" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#0d631b" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,80 L20,75 L40,85 L60,50 L80,60 L100,20 L100,100 L0,100 Z" fill="url(#chartGrad)"></path>
+<path class="drop-shadow-sm" d="M0,80 L20,75 L40,85 L60,50 L80,60 L100,20" fill="none" stroke="#0d631b" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<!-- Data Points -->
+<circle cx="20" cy="75" fill="#ffffff" r="4" stroke="#0d631b" stroke-width="2"></circle>
+<circle cx="60" cy="50" fill="#ffffff" r="4" stroke="#0d631b" stroke-width="2"></circle>
+<circle cx="100" cy="20" fill="#0d631b" r="5"></circle>
+</svg>
+</div>
+<!-- X-Axis Labels -->
+<div class="flex justify-between mt-3 px-2 font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider">
+<span>Oct</span>
+<span>Nov</span>
+<span>Dec</span>
+<span>Jan</span>
+<span>Feb</span>
+<span>Mar</span>
+</div>
+</section>
+<!-- Price Cards List -->
+<section class="space-y-4">
+<h3 class="font-title-md text-title-md text-on-surface mb-2">Tracked Items</h3>
+<!-- Card 1: Urea -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-outline-variant/20 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-3 items-center">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">science</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Urea Fertilizer</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">50kg Bag • Standard</p>
+</div>
+</div>
+<div class="text-right">
+<span class="block font-title-md text-title-md text-on-surface">₹1,250</span>
+<span class="inline-flex items-center gap-0.5 font-label-sm text-[11px] text-error bg-error-container/30 px-1.5 py-0.5 rounded-md mt-0.5">
+<span class="material-symbols-outlined text-[12px]">trending_up</span> +₹45 (Last Mo.)
+                        </span>
+</div>
+</div>
+<!-- AI Insight Badge -->
+<div class="bg-surface-container-low rounded-lg p-3 flex gap-3 items-start border border-primary/10 ai-glow">
+<div class="mt-0.5 relative">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<div class="absolute top-0 right-0 w-2 h-2 bg-secondary-container rounded-full border border-surface-container-low"></div>
+</div>
+<p class="font-body-md text-[14px] leading-snug text-on-surface-variant flex-1">
+                        Price likely to rise next week due to approaching Kharif sowing season. Consider stocking up now.
+                    </p>
+<button class="w-8 h-8 shrink-0 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors focus:ring-2 focus:ring-offset-1 focus:ring-primary">
+<span class="material-symbols-outlined text-[18px]">volume_up</span>
+</button>
+</div>
+</div>
+<!-- Card 2: NPK -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-outline-variant/20 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-3 items-center">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]">compost</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">NPK 19:19:19</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">50kg Bag • Complex</p>
+</div>
+</div>
+<div class="text-right">
+<span class="block font-title-md text-title-md text-on-surface">₹1,480</span>
+<span class="inline-flex items-center gap-0.5 font-label-sm text-[11px] text-primary bg-primary-container/20 px-1.5 py-0.5 rounded-md mt-0.5">
+<span class="material-symbols-outlined text-[12px]">trending_down</span> -₹15 (Last Mo.)
+                        </span>
+</div>
+</div>
+<!-- AI Insight Badge -->
+<div class="bg-surface-container-low rounded-lg p-3 flex gap-3 items-start border border-primary/10">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">psychology</span>
+<p class="font-body-md text-[14px] leading-snug text-on-surface-variant flex-1">
+                        Market stable. Current prices are favorable compared to the 3-month average.
+                    </p>
+<button class="w-8 h-8 shrink-0 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center hover:bg-primary-container hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">volume_up</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/80 dark:bg-surface-container-lowest/80 backdrop-blur-lg border-t border-outline-variant/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex justify-around items-center h-20 px-md pb-safe md:hidden">
+<!-- Home -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 w-16 h-14 rounded-xl transition-colors">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-sm text-[10px]">Home</span>
+</button>
+<!-- Market (Active state mapped from JSON) -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1.5 scale-110 transition-transform duration-200 ease-out shadow-sm">
+<span class="material-symbols-outlined mb-0.5" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="font-label-sm text-[10px] font-bold">Market</span>
+</button>
+<!-- AI Help -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 w-16 h-14 rounded-xl transition-colors">
+<span class="material-symbols-outlined mb-1">psychology</span>
+<span class="font-label-sm text-[10px]">AI Help</span>
+</button>
+<!-- Weather -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 w-16 h-14 rounded-xl transition-colors">
+<span class="material-symbols-outlined mb-1">cloud</span>
+<span class="font-label-sm text-[10px]">Weather</span>
+</button>
+<!-- Alerts -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 w-16 h-14 rounded-xl transition-colors">
+<span class="material-symbols-outlined mb-1">notifications</span>
+<span class="font-label-sm text-[10px]">Alerts</span>
+</button>
+</nav>
+<!-- Desktop Side Nav Placeholder (Hidden on Mobile) -->
+<aside class="hidden md:flex fixed left-0 top-20 bottom-0 w-64 bg-surface border-r border-outline-variant/20 flex-col p-lg gap-2 z-40">
+<button class="flex items-center gap-3 p-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md">Home</span>
+</button>
+<button class="flex items-center gap-3 p-3 rounded-xl bg-primary-container text-on-primary-container shadow-sm font-bold transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="font-label-md">Market</span>
+</button>
+<button class="flex items-center gap-3 p-3 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-md">AI Help</span>
+</button>
+</aside>
+<script>
+        // Simple JS for tab switching interaction feedback
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Add a subtle click ripple effect logic here if needed
+                this.classList.add('opacity-80');
+                setTimeout(() => this.classList.remove('opacity-80'), 150);
+            });
+        });
+    </script>
+</body></html>
