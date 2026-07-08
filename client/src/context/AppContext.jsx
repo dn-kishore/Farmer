@@ -303,14 +303,32 @@ export const AppProvider = ({ children }) => {
     { id: 1, crop: 'Paddy / వరి', disease: 'Leaf Blast / ఆకు తెగులు', confidence: '94%', date: 'June 09, 2026', status: 'Resolved', recommendation: 'Spray Tricyclazole 75% WP (0.6g/L).' }
   ]);
 
-  const [chatMessages, setChatMessages] = useState([
-    { 
-      id: 1, 
-      sender: 'ai', 
-      text: 'Hello! I am AgriAssist, your voice farming partner. Ask me about weather, mandi prices, crop diseases, or fertilizer ratios.',
-      teluguText: 'హలో! నేను అగ్రిఅసిస్ట్, మీ వాయిస్ వ్యవసాయ భాగస్వామిని. వాతావరణం, మార్కెట్ ధరలు, తెగుళ్ళు లేదా ఎరువుల నిష్పత్తి గురించి అడగండి.'
+  const [chatMessages, setChatMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('chatMessages');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.warn('Failed to parse cached chat messages', e);
     }
-  ]);
+    return [
+      { 
+        id: 1, 
+        sender: 'ai', 
+        text: 'Hello! I am AgriAssist, your voice farming partner. Ask me about weather, mandi prices, crop diseases, or fertilizer ratios.',
+        teluguText: 'హలో! నేను అగ్రిఅసిస్ట్, మీ వాయిస్ వ్యవసాయ భాగస్వామిని. వాతావరణం, మార్కెట్ ధరలు, తెగుళ్ళు లేదా ఎరువుల నిష్పత్తి గురించి అడగండి.'
+      }
+    ];
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
+    } catch (e) {
+      console.warn('Failed to save chat messages to cache', e);
+    }
+  }, [chatMessages]);
 
   // Screen transition with back stack logging
   const navigateTo = (screen) => {
