@@ -3,5 +3,5 @@
     <color name="colorPrimary">#2E7D32</color>
     <color name="colorPrimaryDark">#1B5E20</color>
     <color name="colorAccent">#4CAF50</color>
-    <color name="splash_background_color">#F5F5DC</color>
+    <color name="splash_background_color">#FFFFFF</color>
 </resources>
