@@ -17,7 +17,7 @@ const ttsService = {
       currentId = id;
       console.log('Fetching TTS from Sarvam AI for language:', lang);
 
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://farmer-8udp.onrender.com';
       const response = await fetch(`${baseUrl}/api/tts`, {
         method: 'POST',
         headers: {

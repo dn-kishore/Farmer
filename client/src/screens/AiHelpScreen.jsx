@@ -140,7 +140,7 @@ const AiHelpScreen = () => {
         }
       }
 
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://farmer-8udp.onrender.com';
       const response = await fetch(`${baseUrl}/api/chat`, {
         method: 'POST',
         headers: {
@@ -261,7 +261,7 @@ const AiHelpScreen = () => {
       formData.append('mode', 'transcribe');
       formData.append('language_code', isTel ? 'te-IN' : 'en-IN');
 
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://farmer-8udp.onrender.com';
       const response = await fetch(`${baseUrl}/api/stt`, {
         method: 'POST',
         body: formData

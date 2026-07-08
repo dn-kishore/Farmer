@@ -16,15 +16,21 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: client/package-lock.json
 
       - name: Install Dependencies
         run: npm install
+        working-directory: client
 
       - name: Build React App
         run: npm run build
+        working-directory: client
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
 
       - name: Sync Capacitor
         run: npx cap sync android
+        working-directory: client
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -37,9 +43,10 @@ jobs:
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
+        working-directory: client
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: client/android/app/build/outputs/apk/debug/app-debug.apk

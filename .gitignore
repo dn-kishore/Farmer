@@ -88,3 +88,7 @@ android/app/src/main/assets/capacitor.config.json
 
 # Kombai folder
 .kombai/
+
+# Vite cache
+.vite/
+client/.vite/

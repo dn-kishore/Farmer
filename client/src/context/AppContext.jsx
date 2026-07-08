@@ -74,7 +74,7 @@ export const AppProvider = ({ children }) => {
 
   const fetchWeather = async (lat, lon) => {
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://farmer-8udp.onrender.com';
       let url = `${baseUrl}/api/weather?lat=${lat}&lon=${lon}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch weather');
@@ -196,7 +196,7 @@ export const AppProvider = ({ children }) => {
       }
 
       setWeatherData(prev => ({ ...prev, loading: true, error: null }));
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://farmer-8udp.onrender.com';
       let url = `${baseUrl}/api/weather?q=${encodeURIComponent(cityName)}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('City not found');
