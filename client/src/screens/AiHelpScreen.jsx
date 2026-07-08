@@ -58,6 +58,21 @@ const AiHelpScreen = () => {
     }
   };
 
+  const clearChat = () => {
+    const confirmMsg = isTel ? 'చాట్ మొత్తాన్ని క్లియర్ చేయాలా?' : 'Are you sure you want to clear the entire chat history?';
+    if (window.confirm(confirmMsg)) {
+      const defaultMsg = [
+        { 
+          id: 1, 
+          sender: 'ai', 
+          text: 'Hello! I am AgriAssist, your voice farming partner. Ask me about weather, mandi prices, crop diseases, or fertilizer ratios.',
+          teluguText: 'హలో! నేను అగ్రిఅసిస్ట్, మీ వాయిస్ వ్యవసాయ భాగస్వామిని. వాతావరణం, మార్కెట్ ధరలు, తెగుళ్ళు లేదా ఎరువుల నిష్పత్తి గురించి అడగండి.'
+        }
+      ];
+      setChatMessages(defaultMsg);
+    }
+  };
+
   const handleSend = async (textToSend, isVoiceInput = false) => {
     if (!textToSend.trim()) return;
 
@@ -320,29 +335,40 @@ const AiHelpScreen = () => {
     <div className="flex flex-col h-[calc(100vh-140px)] relative">
       
       {/* Top Tabs */}
-      <div className="flex bg-white border-b border-outline-variant/30 sticky top-0 z-30 shrink-0">
-        <button
-          onClick={() => setActiveTab('chat')}
-          className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
-            activeTab === 'chat' 
-              ? 'border-primary text-primary bg-primary-container/5' 
-              : 'border-transparent text-outline hover:text-primary'
-          }`}
-        >
-          <span className="material-symbols-outlined text-sm">chat</span>
-          {isTel ? 'AI అసిస్టెంట్' : 'AI Assistant'}
-        </button>
-        <button
-          onClick={() => setActiveTab('tools')}
-          className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
-            activeTab === 'tools' 
-              ? 'border-primary text-primary bg-primary-container/5' 
-              : 'border-transparent text-outline hover:text-primary'
-          }`}
-        >
-          <span className="material-symbols-outlined text-sm">grid_view</span>
-          {isTel ? 'వ్యవసాయ టూల్స్' : 'Farming Tools'}
-        </button>
+      <div className="flex bg-white border-b border-outline-variant/30 sticky top-0 z-30 shrink-0 items-center pr-3">
+        <div className="flex flex-1">
+          <button
+            onClick={() => setActiveTab('chat')}
+            className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+              activeTab === 'chat' 
+                ? 'border-primary text-primary bg-primary-container/5' 
+                : 'border-transparent text-outline hover:text-primary'
+            }`}
+          >
+            <span className="material-symbols-outlined text-sm">chat</span>
+            {isTel ? 'AI అసిస్టెంట్' : 'AI Assistant'}
+          </button>
+          <button
+            onClick={() => setActiveTab('tools')}
+            className={`flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+              activeTab === 'tools' 
+                ? 'border-primary text-primary bg-primary-container/5' 
+                : 'border-transparent text-outline hover:text-primary'
+            }`}
+          >
+            <span className="material-symbols-outlined text-sm">grid_view</span>
+            {isTel ? 'వ్యవసాయ టూల్స్' : 'Farming Tools'}
+          </button>
+        </div>
+        {activeTab === 'chat' && (
+          <button
+            onClick={clearChat}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-surface-container active:scale-90 transition-transform ml-2"
+            title={isTel ? 'చాట్ క్లియర్ చేయి' : 'Clear Chat'}
+          >
+            <span className="material-symbols-outlined text-[20px]">delete_sweep</span>
+          </button>
+        )}
       </div>
 
       {/* Main Content Area */}

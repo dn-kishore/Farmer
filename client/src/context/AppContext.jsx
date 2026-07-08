@@ -273,6 +273,37 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    let backListener = null;
+
+    if (Capacitor.isNativePlatform()) {
+      const initListener = async () => {
+        try {
+          const { App } = await import('@capacitor/app');
+          if (!active) return;
+          backListener = await App.addListener('backButton', () => {
+            if (currentScreen === 'dashboard' || currentScreen === 'login') {
+              App.exitApp();
+            } else {
+              navigateBack();
+            }
+          });
+        } catch (e) {
+          console.warn('Capacitor App backButton listener failed', e);
+        }
+      };
+      initListener();
+    }
+
+    return () => {
+      active = false;
+      if (backListener) {
+        backListener.remove();
+      }
+    };
+  }, [currentScreen]);
+
 
 
   const toggleDarkMode = () => {
