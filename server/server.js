@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const multer = require('multer');
 const path = require('path');
 const dns = require('dns');
+const https = require('https');
 
 // Force IPv4 first for DNS resolution to prevent fetch failures in cloud environments
 if (dns.setDefaultResultOrder) {
@@ -25,6 +26,28 @@ app.use(express.json());
 // Set up multer for processing audio file uploads in memory
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Helper to make native HTTPS GET requests to avoid Node 18/20 fetch dual-stack ETIMEDOUT bugs in cloud environments
+function httpsGet(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        resolve({
+          ok: res.statusCode >= 200 && res.statusCode < 300,
+          status: res.statusCode,
+          json: async () => JSON.parse(data),
+          text: async () => data
+        });
+      });
+    }).on('error', (err) => {
+      reject(err);
+    });
+  });
+}
+
 // 1. Weather API Proxy
 app.get('/api/weather', async (req, res) => {
   try {
@@ -41,7 +64,7 @@ app.get('/api/weather', async (req, res) => {
     }
 
     console.log(`[Weather] Fetching weather from OpenWeatherMap: ${url.replace(apiKey, 'HIDDEN')}`);
-    const response = await fetch(url);
+    const response = await httpsGet(url);
     if (!response.ok) {
       return res.status(response.status).json({ error: `Weather API failed with status ${response.status}` });
     }
