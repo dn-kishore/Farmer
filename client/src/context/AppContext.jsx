@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { Geolocation } from '@capacitor/geolocation';
-import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { Capacitor } from '@capacitor/core';
 
 const AppContext = createContext();
@@ -75,7 +74,8 @@ export const AppProvider = ({ children }) => {
 
   const fetchWeather = async (lat, lon) => {
     try {
-      let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=e7d96cb598ba84ac3c1fb223a233c543&units=metric`;
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      let url = `${baseUrl}/api/weather?lat=${lat}&lon=${lon}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch weather');
       const data = await res.json();
@@ -117,9 +117,11 @@ export const AppProvider = ({ children }) => {
 
       setWeatherData(newWeatherData);
       saveWeatherToCache(newWeatherData);
+      return newWeatherData;
     } catch (err) {
       console.error(err);
       setWeatherData(prev => ({ ...prev, loading: false }));
+      return null;
     }
   };
 
@@ -159,16 +161,18 @@ export const AppProvider = ({ children }) => {
         position = await tryWebGeolocation();
       }
 
-      await fetchWeather(position.coords.latitude, position.coords.longitude);
+      return await fetchWeather(position.coords.latitude, position.coords.longitude);
     } catch (error) {
       console.error('All geolocation attempts failed:', error);
+      const errMsg = language === 'te' 
+        ? 'GPS పని చేయడం లేదు. దయచేసి మీ ప్రాంతాన్ని వెతకండి.' 
+        : 'GPS location detection failed. Please search for your town manually.';
       setWeatherData(prev => ({ 
         ...prev, 
         loading: false, 
-        error: language === 'te' 
-          ? 'GPS పని చేయడం లేదు. దయచేసి మీ ప్రాంతాన్ని వెతకండి.' 
-          : 'GPS location detection failed. Please search for your town manually.' 
+        error: errMsg
       }));
+      return null;
     }
   };
 
@@ -192,7 +196,8 @@ export const AppProvider = ({ children }) => {
       }
 
       setWeatherData(prev => ({ ...prev, loading: true, error: null }));
-      let url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityName)}&appid=e7d96cb598ba84ac3c1fb223a233c543&units=metric`;
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      let url = `${baseUrl}/api/weather?q=${encodeURIComponent(cityName)}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('City not found');
       const data = await res.json();
@@ -268,40 +273,7 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  // Live OTA Web Updates
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      const checkForUpdates = async () => {
-        try {
-          // Notify app is ready to prevent rolling back to previous version
-          await CapacitorUpdater.notifyAppReady();
 
-          // Get current version dynamically
-          const currentBundle = await CapacitorUpdater.current();
-          const currentWebVersion = currentBundle.version || '1.0.0';
-          console.log('Current active bundle version:', currentWebVersion);
-
-          // Check update version descriptor from your server
-          const response = await fetch('https://raw.githubusercontent.com/dn-kishore/agriassist-ota/main/version.json');
-          if (!response.ok) return;
-          const manifest = await response.json();
-          
-          if (manifest.version !== currentWebVersion && manifest.url) {
-            console.log('Downloading OTA update version:', manifest.version);
-            const version = await CapacitorUpdater.download({
-              url: manifest.url,
-              version: manifest.version,
-            });
-            console.log('OTA update downloaded. Swapping build...');
-            await CapacitorUpdater.set(version);
-          }
-        } catch (err) {
-          console.warn('OTA update check failed:', err);
-        }
-      };
-      checkForUpdates();
-    }
-  }, []);
 
   const toggleDarkMode = () => {
     setIsDark((prev) => {

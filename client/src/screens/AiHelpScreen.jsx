@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import ttsService from '../services/ttsService';
 
 const AiHelpScreen = () => {
-  const { language, navigateTo, chatMessages, setChatMessages, t, setFertilizerHelpMode } = useApp();
+  const { language, navigateTo, chatMessages, setChatMessages, t, setFertilizerHelpMode, weatherData, refreshWeatherWithGps } = useApp();
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' or 'tools'
   const [inputText, setInputText] = useState('');
   const [playingId, setPlayingId] = useState(null);
@@ -81,6 +81,44 @@ const AiHelpScreen = () => {
     };
     setChatMessages((prev) => [...prev, thinkingMsg]);
 
+    let activeWeatherData = weatherData;
+    const isWeatherQuery = textToSend.toLowerCase().includes('weather') || 
+                           textToSend.toLowerCase().includes('temp') ||
+                           textToSend.toLowerCase().includes('rain') ||
+                           textToSend.toLowerCase().includes('forecast') ||
+                           textToSend.includes('వాతావరణం') || 
+                           textToSend.includes('వర్షం') || 
+                           textToSend.includes('ఎండ');
+
+    if (isWeatherQuery && (!activeWeatherData || !activeWeatherData.location)) {
+      // Set thinking text to indicate location detection
+      setChatMessages((prev) => 
+        prev.map(m => m.id === thinkingId ? {
+          ...m,
+          text: isTel ? 'మీ ప్రాంతాన్ని కనుగొంటున్నాను...' : 'Detecting your location...',
+          teluguText: isTel ? 'మీ ప్రాంతాన్ని కనుగొంటున్నాను...' : 'Detecting your location...'
+        } : m)
+      );
+
+      try {
+        const freshWeather = await refreshWeatherWithGps();
+        if (freshWeather && freshWeather.location) {
+          activeWeatherData = freshWeather;
+        }
+      } catch (err) {
+        console.warn('Auto weather fetch failed:', err);
+      }
+
+      // Restore standard thinking text
+      setChatMessages((prev) => 
+        prev.map(m => m.id === thinkingId ? {
+          ...m,
+          text: isTel ? 'ఆలోచిస్తున్నాను...' : 'Thinking...',
+          teluguText: isTel ? 'ఆలోచిస్తున్నాను...' : 'Thinking...'
+        } : m)
+      );
+    }
+
     try {
       const activeModel = isVoiceInput ? 'openrouter/free' : 'cohere/north-mini-code:free';
       console.log('Sending chat request to OpenRouter using model:', activeModel);
@@ -93,20 +131,27 @@ const AiHelpScreen = () => {
           content: isTel ? m.teluguText : m.text
         }));
 
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      let weatherContext = '';
+      if (activeWeatherData && activeWeatherData.location) {
+        if (isTel) {
+          weatherContext = `\nప్రస్తుత వాతావరణ సమాచారం (${activeWeatherData.teluguLocation || activeWeatherData.location}): ఉష్ణోగ్రత ${activeWeatherData.temp}°C, వాతావరణ పరిస్థితి ${activeWeatherData.teluguCondition || activeWeatherData.condition}, గాలి తేమ ${activeWeatherData.humidity}%, గాలి వేగం ${activeWeatherData.windSpeed} కి.మీ/గంట.`;
+        } else {
+          weatherContext = `\nCurrent weather in ${activeWeatherData.location}: Temperature is ${activeWeatherData.temp}°C, Condition is ${activeWeatherData.condition}, Humidity is ${activeWeatherData.humidity}%, Wind Speed is ${activeWeatherData.windSpeed} km/h.`;
+        }
+      }
+
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${baseUrl}/api/chat`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY || ''}`,
-          'HTTP-Referer': 'https://agriassist.app',
-          'X-Title': 'AgriAssist AI'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           model: activeModel,
           messages: [
             {
               role: 'system',
-              content: `You are AgriAssist, an AI voice farming partner. Help the farmer with weather, mandi prices, crop diseases, or fertilizer ratios. Keep your responses short, concise, and easy to understand (maximum 3 sentences). Respond in ${isTel ? 'Telugu (using Telugu script)' : 'English'} only.`
+              content: `You are AgriAssist, an AI voice farming partner. Help the farmer with weather, mandi prices, crop diseases, or fertilizer ratios. Keep your responses short, concise, and easy to understand (maximum 3 sentences). Respond in ${isTel ? 'Telugu (using Telugu script)' : 'English'} only.${weatherContext}`
             },
             ...history,
             { role: 'user', content: textToSend }
@@ -216,11 +261,9 @@ const AiHelpScreen = () => {
       formData.append('mode', 'transcribe');
       formData.append('language_code', isTel ? 'te-IN' : 'en-IN');
 
-      const response = await fetch('https://api.sarvam.ai/speech-to-text', {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${baseUrl}/api/stt`, {
         method: 'POST',
-        headers: {
-          'api-subscription-key': import.meta.env.VITE_SARVAM_API_KEY || ''
-        },
         body: formData
       });
 

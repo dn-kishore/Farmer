@@ -17,17 +17,15 @@ const ttsService = {
       currentId = id;
       console.log('Fetching TTS from Sarvam AI for language:', lang);
 
-      const response = await fetch('https://api.sarvam.ai/text-to-speech', {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${baseUrl}/api/tts`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'api-subscription-key': import.meta.env.VITE_SARVAM_API_KEY || ''
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           text: text,
-          target_language_code: lang === 'te' ? 'te-IN' : 'en-IN',
-          speaker: lang === 'te' ? 'roopa' : 'shubh',
-          model: 'bulbul:v3'
+          lang: lang
         })
       });
 
