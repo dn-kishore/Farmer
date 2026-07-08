@@ -90,9 +90,7 @@ const WeatherScreen = () => {
     setSearchError('');
     setSuggestions([]);
     const success = await fetchWeatherByCity(citySearch);
-    if (!success) {
-      setSearchError(isTel ? 'ప్రాంతం కనుగొనబడలేదు. మళ్ళీ ప్రయత్నించండి.' : 'Location not found. Try another city.');
-    } else {
+    if (success) {
       setCitySearch('');
     }
   };

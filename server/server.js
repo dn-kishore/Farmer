@@ -3,6 +3,12 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const multer = require('multer');
 const path = require('path');
+const dns = require('dns');
+
+// Force IPv4 first for DNS resolution to prevent fetch failures in cloud environments
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 // Load environment variables from the local server folder
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -44,7 +50,7 @@ app.get('/api/weather', async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('[Weather] Route error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error', message: error.message });
   }
 });
 

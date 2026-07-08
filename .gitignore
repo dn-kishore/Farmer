@@ -85,6 +85,7 @@ android/app/src/main/assets/capacitor.config.json
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
 
 # Kombai folder
 .kombai/

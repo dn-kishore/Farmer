@@ -77,7 +77,25 @@ export const AppProvider = ({ children }) => {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://farmer-8udp.onrender.com';
       let url = `${baseUrl}/api/weather?lat=${lat}&lon=${lon}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch weather');
+      if (!res.ok) {
+        let errMsg = language === 'te' 
+          ? 'వాతావరణ వివరాలను పొందడం విఫలమైంది.' 
+          : 'Failed to fetch weather details.';
+        try {
+          const errData = await res.json();
+          const serverMsg = errData.message || errData.error || '';
+          if (serverMsg) {
+            if (res.status === 404 || serverMsg.includes('404') || serverMsg.includes('status 404')) {
+              errMsg = language === 'te' 
+                ? 'ప్రాంతం కనుగొనబడలేదు. మళ్ళీ ప్రయత్నించండి.' 
+                : 'Location not found. Try another city.';
+            } else {
+              errMsg = serverMsg;
+            }
+          }
+        } catch (_) {}
+        throw new Error(errMsg);
+      }
       const data = await res.json();
       
       let iconName = 'partly_cloudy_day';
@@ -120,7 +138,7 @@ export const AppProvider = ({ children }) => {
       return newWeatherData;
     } catch (err) {
       console.error(err);
-      setWeatherData(prev => ({ ...prev, loading: false }));
+      setWeatherData(prev => ({ ...prev, loading: false, error: err.message }));
       return null;
     }
   };
@@ -199,7 +217,21 @@ export const AppProvider = ({ children }) => {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://farmer-8udp.onrender.com';
       let url = `${baseUrl}/api/weather?q=${encodeURIComponent(cityName)}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error('City not found');
+      if (!res.ok) {
+        let errMsg = language === 'te' 
+          ? 'ప్రాంతం కనుగొనబడలేదు. మళ్ళీ ప్రయత్నించండి.' 
+          : 'Location not found. Try another city.';
+        if (res.status !== 404) {
+          try {
+            const errData = await res.json();
+            const serverMsg = errData.message || errData.error || '';
+            if (serverMsg && !serverMsg.includes('404') && !serverMsg.includes('status 404')) {
+              errMsg = serverMsg;
+            }
+          } catch (_) {}
+        }
+        throw new Error(errMsg);
+      }
       const data = await res.json();
       
       let iconName = 'partly_cloudy_day';
@@ -242,7 +274,7 @@ export const AppProvider = ({ children }) => {
       return true;
     } catch (err) {
       console.error(err);
-      setWeatherData(prev => ({ ...prev, loading: false, error: 'Location not found' }));
+      setWeatherData(prev => ({ ...prev, loading: false, error: err.message }));
       return false;
     }
   };
