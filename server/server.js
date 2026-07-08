@@ -52,18 +52,32 @@ function httpsGet(url) {
 app.get('/api/weather', async (req, res) => {
   try {
     const { lat, lon, q } = req.query;
-    const apiKey = process.env.OPENWEATHER_API_KEY || 'e7d96cb598ba84ac3c1fb223a233c543';
+    const proxyUrl = process.env.WEATHER_PROXY_URL;
     
     let url;
-    if (lat && lon) {
-      url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
-    } else if (q) {
-      url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(q)}&appid=${apiKey}&units=metric`;
+    if (proxyUrl) {
+      // Use Cloudflare Worker proxy if configured
+      if (lat && lon) {
+        url = `${proxyUrl}?lat=${lat}&lon=${lon}`;
+      } else if (q) {
+        url = `${proxyUrl}?q=${encodeURIComponent(q)}`;
+      } else {
+        return res.status(400).json({ error: 'Missing parameter: lat/lon or q is required' });
+      }
+      console.log(`[Weather] Fetching weather via Cloudflare Worker proxy: ${url}`);
     } else {
-      return res.status(400).json({ error: 'Missing parameter: lat/lon or q is required' });
+      // Fallback to direct OpenWeatherMap API
+      const apiKey = process.env.OPENWEATHER_API_KEY || 'e7d96cb598ba84ac3c1fb223a233c543';
+      if (lat && lon) {
+        url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+      } else if (q) {
+        url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(q)}&appid=${apiKey}&units=metric`;
+      } else {
+        return res.status(400).json({ error: 'Missing parameter: lat/lon or q is required' });
+      }
+      console.log(`[Weather] Fetching weather directly from OpenWeatherMap: ${url.replace(apiKey, 'HIDDEN')}`);
     }
 
-    console.log(`[Weather] Fetching weather from OpenWeatherMap: ${url.replace(apiKey, 'HIDDEN')}`);
     const response = await httpsGet(url);
     if (!response.ok) {
       return res.status(response.status).json({ error: `Weather API failed with status ${response.status}` });
